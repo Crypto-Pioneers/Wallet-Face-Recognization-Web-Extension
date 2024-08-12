@@ -3,7 +3,7 @@ import { resolve } from 'path';
 import fs from 'fs';
 import { defineConfig } from 'vite';
 import { crx, ManifestV3Export } from '@crxjs/vite-plugin';
-
+import path from 'path';
 import manifest from './manifest.json';
 import devManifest from './manifest.dev.json';
 import pkg from './package.json';
@@ -62,6 +62,6 @@ export default defineConfig({
   build: {
     outDir,
     sourcemap: isDev,
-    emptyOutDir: !isDev
+    emptyOutDir: !isDev,
   },
 });

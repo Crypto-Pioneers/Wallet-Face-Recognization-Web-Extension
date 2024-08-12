@@ -1,9 +1,10 @@
 import React, { createContext, useReducer, ReactNode } from "react";
+import Webcam from "react-webcam";
 
 interface StateType {
 	isDetected: boolean;
 	WebcamStarted: boolean;
-	WebCamRef: any;
+	WebCamRef: Webcam | null;
 	CameraActiveType: number;
 	resolution: {
 		width: number;
@@ -14,7 +15,7 @@ interface StateType {
 const initialState: StateType = {
 	isDetected: false,
 	WebcamStarted: true,
-	WebCamRef: false,
+	WebCamRef: null,
 	CameraActiveType: 1,
 	resolution: {
 		width: 360,
@@ -25,7 +26,7 @@ const initialState: StateType = {
 interface ContextType extends StateType {
 	setIsDetected: (value: boolean) => void;
 	setWebcamStarted: (value: boolean) => void;
-	setWebCamRef: (ref: any) => void;
+	setWebCamRef: (ref: Webcam | null) => void;
 	setCameraActiveType: (type: number) => void;
 	setResolution: (resolution: { width: number; height: number }) => void;
 }
@@ -44,7 +45,7 @@ export const WebCamContext = createContext<ContextType>(defaultValues);
 type Action =
 	| { type: "SET_DETECTED"; payload: boolean }
 	| { type: "SET_WEBCAM"; payload: boolean }
-	| { type: "SET_WEBCAM_REF"; payload: any }
+	| { type: "SET_WEBCAM_REF"; payload: Webcam | null }
 	| { type: "SET_RESOLUTION"; payload: { width: number; height: number } }
 	| { type: "SET_CAMERA_ACTIVE_TYPE"; payload: number };
 
@@ -53,6 +54,7 @@ const WebcamReducer = (state: StateType, action: Action): StateType => {
 		case "SET_DETECTED":
 			return { ...state, isDetected: action.payload };
 		case "SET_WEBCAM":
+			console.log("SET_WEBCAM");
 			return { ...state, WebcamStarted: action.payload };
 		case "SET_WEBCAM_REF":
 			return { ...state, WebCamRef: action.payload };
@@ -73,7 +75,7 @@ export const WebcamProvider: React.FC<WebcamProviderProps> = ({ children }) => {
 	const [state, dispatch] = useReducer(WebcamReducer, initialState);
 	const setIsDetected = (value: boolean) => dispatch({ type: "SET_DETECTED", payload: value });
 	const setWebcamStarted = (value: boolean) => dispatch({ type: "SET_WEBCAM", payload: value });
-	const setWebCamRef = (ref: any) => dispatch({ type: "SET_WEBCAM_REF", payload: ref });
+	const setWebCamRef = (ref: Webcam | null) => dispatch({ type: "SET_WEBCAM_REF", payload: ref });
 	const setCameraActiveType = (type: number) => dispatch({ type: "SET_CAMERA_ACTIVE_TYPE", payload: type });
 	const setResolution = (value: { width: number, height: number }) => dispatch({ type: "SET_RESOLUTION", payload: value });
 

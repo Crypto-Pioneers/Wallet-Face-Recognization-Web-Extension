@@ -2310,7 +2310,7 @@
     "@polkadot/util-crypto" "^10.4.2"
     rxjs "^7.8.0"
 
-"@polkadot/api@^10.10.1", "@polkadot/api@^10.7.3", "@polkadot/api@^12.2.1", "@polkadot/api@^12.3.1", "@polkadot/api@12.3.1", "@polkadot/api@latest":
+"@polkadot/api@*", "@polkadot/api@^10.10.1", "@polkadot/api@^10.7.3", "@polkadot/api@^12.2.1", "@polkadot/api@^12.3.1", "@polkadot/api@12.3.1", "@polkadot/api@latest":
   version "12.3.1"
   resolved "https://registry.npmjs.org/@polkadot/api/-/api-12.3.1.tgz"
   integrity sha512-VCrtadJRJttya5NhZ8slkD/UQyOZv4qABjagQMaG1eTZpn5k1wskmDUGdHrZZpYO5jBPewnCgaN8+LPKO2qiOw==
@@ -2333,7 +2333,7 @@
     rxjs "^7.8.1"
     tslib "^2.6.2"
 
-"@polkadot/api@^10.9.1", "@polkadot/api@10.13.1":
+"@polkadot/api@^10.12.4", "@polkadot/api@^10.9.1", "@polkadot/api@10.13.1":
   version "10.13.1"
   resolved "https://registry.npmjs.org/@polkadot/api/-/api-10.13.1.tgz"
   integrity sha512-YrKWR4TQR5CDyGkF0mloEUo7OsUA+bdtENpJGOtNavzOQUDEbxFE0PVzokzZfVfHhHX2CojPVmtzmmLxztyJkg==
@@ -2452,6 +2452,29 @@
     moonbeam-types-bundle "2.0.10"
     pontem-types-bundle "1.0.15"
     rxjs "^7.8.1"
+    tslib "^2.6.2"
+
+"@polkadot/extension-dapp@^0.46.5":
+  version "0.46.9"
+  resolved "https://registry.npmjs.org/@polkadot/extension-dapp/-/extension-dapp-0.46.9.tgz"
+  integrity sha512-y5udSeQ/X9MEoyjlpTcCn0UAEjZ2jjy6U3V/jiVFQo5vBKhdqAhN1oN8X5c4yWurmhYM/7oibImxAjEoXuwH+Q==
+  dependencies:
+    "@polkadot/extension-inject" "0.46.9"
+    "@polkadot/util" "^12.6.2"
+    "@polkadot/util-crypto" "^12.6.2"
+    tslib "^2.6.2"
+
+"@polkadot/extension-inject@0.46.9":
+  version "0.46.9"
+  resolved "https://registry.npmjs.org/@polkadot/extension-inject/-/extension-inject-0.46.9.tgz"
+  integrity sha512-m0jnrs9+jEOpMH6OUNl7nHpz9SFFWK9LzuqB8T3htEE3RUYPL//SLCPyEKxAAgHu7F8dgkUHssAWQfANofALCQ==
+  dependencies:
+    "@polkadot/api" "^10.12.4"
+    "@polkadot/rpc-provider" "^10.12.4"
+    "@polkadot/types" "^10.12.4"
+    "@polkadot/util" "^12.6.2"
+    "@polkadot/util-crypto" "^12.6.2"
+    "@polkadot/x-global" "^12.6.2"
     tslib "^2.6.2"
 
 "@polkadot/keyring@^10.4.2":
@@ -2677,7 +2700,7 @@
     "@polkadot/util" "^10.4.2"
     rxjs "^7.8.0"
 
-"@polkadot/rpc-provider@^10.9.1", "@polkadot/rpc-provider@10.13.1":
+"@polkadot/rpc-provider@^10.12.4", "@polkadot/rpc-provider@^10.9.1", "@polkadot/rpc-provider@10.13.1":
   version "10.13.1"
   resolved "https://registry.npmjs.org/@polkadot/rpc-provider/-/rpc-provider-10.13.1.tgz"
   integrity sha512-oJ7tatVXYJ0L7NpNiGd69D558HG5y5ZDmH2Bp9Dd4kFTQIiV8A39SlWwWUPCjSsen9lqSvvprNLnG/VHTpenbw==
@@ -2967,7 +2990,7 @@
     "@babel/runtime" "^7.20.13"
     "@polkadot/util" "^10.4.2"
 
-"@polkadot/types@^10.10.1", "@polkadot/types@^10.5.1", "@polkadot/types@^10.9.1", "@polkadot/types@10.13.1":
+"@polkadot/types@^10.10.1", "@polkadot/types@^10.12.4", "@polkadot/types@^10.5.1", "@polkadot/types@^10.9.1", "@polkadot/types@10.13.1":
   version "10.13.1"
   resolved "https://registry.npmjs.org/@polkadot/types/-/types-10.13.1.tgz"
   integrity sha512-Hfvg1ZgJlYyzGSAVrDIpp3vullgxrjOlh/CSThd/PI4TTN1qHoPSFm2hs77k3mKkOzg+LrWsLE0P/LP2XddYcw==
@@ -5591,6 +5614,11 @@ antd@^5.20.0:
     scroll-into-view-if-needed "^3.1.0"
     throttle-debounce "^5.0.2"
 
+any-base@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/any-base/-/any-base-1.1.0.tgz"
+  integrity sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==
+
 any-promise@^1.0.0:
   version "1.3.0"
   resolved "https://registry.npmjs.org/any-promise/-/any-promise-1.3.0.tgz"
@@ -5815,7 +5843,7 @@ axe-core@=4.7.0:
   resolved "https://registry.npmjs.org/axe-core/-/axe-core-4.7.0.tgz"
   integrity sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==
 
-axios@^1.7.3:
+axios@^1.4.0, axios@^1.7.3:
   version "1.7.3"
   resolved "https://registry.npmjs.org/axios/-/axios-1.7.3.tgz"
   integrity sha512-Ar7ND9pU99eJ9GpoGQKhKf58GpUOgnzuaB7ueNQ5BMi0p+LZ5oaEnfF999fAArcTIBwXTCHAmGcHOZJaWPq9Nw==
@@ -5878,6 +5906,11 @@ base-x@^3.0.8:
   integrity sha512-7d0s06rR9rYaIWHkpfLIFICM/tkSVdoPC9qYAQRpxn9DdKNWNsKC0uk++akckyLq16Tx2WIinnZ6WRriAt6njQ==
   dependencies:
     safe-buffer "^5.0.1"
+
+base-x@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/base-x/-/base-x-4.0.0.tgz"
+  integrity sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==
 
 base64-js@^1.3.1, base64-js@^1.5.1:
   version "1.5.1"
@@ -5969,6 +6002,13 @@ browserslist@^4.21.10, browserslist@^4.23.0, browserslist@^4.23.1, browserslist@
     electron-to-chromium "^1.5.4"
     node-releases "^2.0.18"
     update-browserslist-db "^1.1.0"
+
+bs58@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/bs58/-/bs58-5.0.0.tgz"
+  integrity sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==
+  dependencies:
+    base-x "^4.0.0"
 
 bser@2.1.1:
   version "2.1.1"
@@ -6096,6 +6136,22 @@ canvas-renderer@~2.2.0:
     keccak "^3.0.3"
     preact "^10.16.0"
     sha.js "^2.4.11"
+
+cess-js-sdk-frontend@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/cess-js-sdk-frontend/-/cess-js-sdk-frontend-0.2.3.tgz"
+  integrity sha512-tx31wUEyk+TtbH6ft/tx01adzCavEBj3ctTPLo+hK5qvIvIez1lzkoRcsgkAaKcbTEgvOf7B/X3LOdbRjaRojg==
+  dependencies:
+    "@polkadot/api" "^10.9.1"
+    "@polkadot/extension-dapp" "^0.46.5"
+    "@polkadot/util" "^12.5.1"
+    axios "^1.4.0"
+    bs58 "^5.0.0"
+    lodash "^4.17.21"
+    mkdirp "^1.0.4"
+    moment "^2.29.4"
+    sha256 "^0.2.0"
+    short-uuid "^4.2.0"
 
 chalk@^2.4.2:
   version "2.4.2"
@@ -6409,6 +6465,11 @@ consola@^3.2.3:
   resolved "https://registry.npmjs.org/consola/-/consola-3.2.3.tgz"
   integrity sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==
 
+convert-hex@~0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/convert-hex/-/convert-hex-0.1.0.tgz"
+  integrity sha512-w20BOb1PiR/sEJdS6wNrUjF5CSfscZFUp7R9NSlXH8h2wynzXVEPFPJECAnkNylZ+cvf3p7TyRUHggDmrwXT9A==
+
 convert-source-map@^1.7.0:
   version "1.9.0"
   resolved "https://registry.npmjs.org/convert-source-map/-/convert-source-map-1.9.0.tgz"
@@ -6418,6 +6479,11 @@ convert-source-map@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/convert-source-map/-/convert-source-map-2.0.0.tgz"
   integrity sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==
+
+convert-string@~0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/convert-string/-/convert-string-0.1.0.tgz"
+  integrity sha512-1KX9ESmtl8xpT2LN2tFnKSbV4NiarbVi8DVb39ZriijvtTklyrT+4dT1wsGMHKD3CJUjXgvJzstm9qL9ICojGA==
 
 cookie-es@^1.1.0:
   version "1.2.2"
@@ -9426,7 +9492,7 @@ mock-socket@^9.1.2, mock-socket@^9.2.1, mock-socket@^9.3.1:
   resolved "https://registry.npmjs.org/mock-socket/-/mock-socket-9.3.1.tgz"
   integrity sha512-qxBgB7Qa2sEQgHFjj0dSigq7fX4k6Saisd5Nelwp2q8mlbAFh5dHV9JTTlF8viYJLSSWgMCZFUom8PJcMNBoJw==
 
-moment@^2.30.1, "moment@>= 2.x":
+moment@^2.29.4, moment@^2.30.1, "moment@>= 2.x":
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
@@ -11382,6 +11448,14 @@ sha.js@^2.4.0, sha.js@^2.4.11:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
+sha256@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/sha256/-/sha256-0.2.0.tgz"
+  integrity sha512-kTWMJUaez5iiT9CcMv8jSq6kMhw3ST0uRdcIWl3D77s6AsLXNXRp3heeqqfu5+Dyfu4hwpQnMzhqHh8iNQxw0w==
+  dependencies:
+    convert-hex "~0.1.0"
+    convert-string "~0.1.0"
+
 shallow-clone@^3.0.0:
   version "3.0.1"
   resolved "https://registry.npmjs.org/shallow-clone/-/shallow-clone-3.0.1.tgz"
@@ -11410,6 +11484,14 @@ shell-quote@^1.6.1, shell-quote@^1.7.3:
   version "1.8.1"
   resolved "https://registry.npmjs.org/shell-quote/-/shell-quote-1.8.1.tgz"
   integrity sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==
+
+short-uuid@^4.2.0:
+  version "4.2.2"
+  resolved "https://registry.npmjs.org/short-uuid/-/short-uuid-4.2.2.tgz"
+  integrity sha512-IE7hDSGV2U/VZoCsjctKX6l5t5ak2jE0+aeGJi3KtvjIUNuZVmHVYUjNBhmo369FIWGDtaieRaO8A83Lvwfpqw==
+  dependencies:
+    any-base "^1.1.0"
+    uuid "^8.3.2"
 
 side-channel@^1.0.4, side-channel@^1.0.6:
   version "1.0.6"
