@@ -1,7 +1,5 @@
 import React from 'react';
-import logo from '@assets/img/logo.svg';
 import Home from '@src/components/home';
-import Header from '@src/components/header';
 
 export default function Popup(): JSX.Element {
   return (

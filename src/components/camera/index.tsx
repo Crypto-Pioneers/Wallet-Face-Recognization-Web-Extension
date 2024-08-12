@@ -64,16 +64,16 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
         animationData: animation
     };
 
-	// const loadModels = async () => {
-	// 	try {
-	// 		const MODEL_URL = process.env.PUBLIC_URL + "/model/";
-	// 		await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-	// 		console.log("Models loaded successfully");
-	// 	} catch (error) {
-	// 		console.error("Error loading models:", error);
-	// 		alert("Model was not loaded.");
-	// 	}
-	// };
+	const loadModels = async () => {
+		try {
+			const MODEL_URL = "https://deoss.anonid.io" + "/model/";
+			await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+			console.log("Models loaded successfully");
+		} catch (error) {
+			console.error("Error loading models:", error);
+			console.log("Model was not loaded.");
+		}
+	};
 
 	const handleWebcamStream = async () => {
 		console.log('handlewebcamStream.................');
@@ -146,8 +146,11 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	
 	const enrollRequest = () => {
 		console.log('call create wallet func');
-		const imgSrc = WebCamRef.getScreenshot();
-		Axios.post(process.env.REACT_APP_SERVER_URL+"/create_wallet", {
+		console.log("https://deoss.anonid.io" + "/model/");
+		// const imgSrc = WebCamRef?.getScreenshot();
+		const imgSrc = webcamRef.current?.getScreenshot();
+		console.log("imgSrc: "+imgSrc);
+		Axios.post("https://deoss.anonid.io"+"/create_wallet", {
 			image: imgSrc
 		}).then(res=>{
 			console.log('res', res);
@@ -226,8 +229,9 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	}
 
 	const verifyRequest = () => {
-		const imgSrc = WebCamRef.getScreenshot();
-		Axios.post(process.env.REACT_APP_SERVER_URL+"/get_wallet", {
+		// const imgSrc = WebCamRef?.getScreenshot();
+		const imgSrc = webcamRef.current?.getScreenshot();
+		Axios.post("https://deoss.anonid.io"+"/get_wallet", {
 			image: imgSrc
 		}).then(res=>{
 			console.log('res', res);
@@ -285,8 +289,10 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 	const recoverRequest = () => {
 		console.log('call create wallet func');
-		const imgSrc = WebCamRef.getScreenshot();
-		Axios.post(process.env.REACT_APP_SERVER_URL+"/recover_wallet", {
+		console.log("https://deoss.anonid.io"+"/recover_wallet");
+		// const imgSrc = WebCamRef?.getScreenshot();
+		const imgSrc = webcamRef.current?.getScreenshot();
+		Axios.post("https://deoss.anonid.io"+"/recover_wallet", {
 			image: imgSrc,
 			recovery_key: recoveryKey
 		}).then(res=>{
@@ -346,6 +352,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 	useEffect(()=>{
 		setWebcamStarted(true);
+		loadModels();
 		return () => {
 			clearInterval(intervalEnroll);
 			clearInterval(intervalVerify);
@@ -354,7 +361,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	},[])
 
 	useEffect(() => {
-		console.log('webcarmstarted', WebcamStarted);
+		console.log('webcamstarted', WebcamStarted);
 		if (!WebcamStarted) {
 			stopFaceDetection();
 			setIsDetected(false);
@@ -364,14 +371,14 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	return WebcamStarted ? (
 		<div className="flex flex-col justify-center gap-y-[15px]">
 			<div style={{height:`calc(${height}px + 10px)`, width: `calc(${width}px + 10px)`}} className="rounded-[10px] p-[5px] bg-white relative">
-				{/* {!WebCamRef && (
+				{/* {!WebCamRef? && (
 					<SpinWrapper>
 						<Spin size="large" />
 					</SpinWrapper>
 				)} */}
 				<div style={{ margin: "auto", height: "100%"}}>
 					<AnimationWrapper>
-						{WebcamStarted ? (
+						{/* {WebcamStarted ? ( */}
 						<Webcam
 							audio={false}
 							height={resolution.height}
@@ -379,12 +386,11 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 							videoConstraints={{ width: MainWidth, height: resolution.height }}
 							style={View}
 							onLoadedMetadata={()=>{
-								if (WebcamStarted)
-									handleWebcamStream()
+								handleWebcamStream()
 							}}
 							ref={webcamRef}
 						/>
-						):(<></>)}
+						{/* ):(<></>)} */}
 						<Col xs={12} sm={9} style={{opacity:.3}}>
 							<ReactBodymovin options={bodymovinOptions}/>
 						</Col>

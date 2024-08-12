@@ -122,10 +122,11 @@ function Home() {
 				type: config.keyringOption.type,
 				ss58Format: config.keyringOption.ss58Format
 			});
-		
+			console.log("API TEST")
+			console.log(api.tx);
 			// Log to confirm setup is complete
-			antdHelper.noti(`API connected to ${url}, keyring set for type ${config.keyringOption.type}`);
-		
+			console.log(`API connected to ${url}, keyring set for type ${config.keyringOption.type}`);
+
 			return { api, keyring };
 		} catch (error) {
 			console.error(`Failed to initialize API or keyring: ${error}`);
@@ -135,6 +136,7 @@ function Home() {
 
 	useEffect(() => {
 		const url = store.get<string>("custom-node");
+		console.log("EXTENSION STARTING")
 		if (url) {
 			setCustomRPC(url);
 		}
@@ -147,7 +149,6 @@ function Home() {
 			}
 		}, 5000);
 
-		createWalletTestFromFace("cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E", "february duck borrow there dynamic original screen clip harsh drive bird tunnel");
 		return () => {
 			clearInterval(historyTimeout);
 			// if (unsubBalance) {
@@ -158,20 +159,24 @@ function Home() {
 
 	const init = async (url: string | null) => {
 		try {
+			console.log("init step 1/3");
 			const config = JSON.parse(JSON.stringify(webconfig.sdkConfig));
 			if (url && url != "wss://testnet-rpc1.cess.cloud/ws/") {
 				config.nodeURL = url;
 			}
+			console.log("init step 2/3");
 			const { api, keyring } = await InitAPI(config);
 			if (api) {
 				window.api = api;
 				window.keyring = keyring;
+				console.log(window.api)
+				console.log(window.keyring)
 				if (customRPC && url && url != "wss://testnet-rpc1.cess.cloud/ws/") {
 					store.set<string>("custom-node", url);
 				}
 			}
-			antdHelper.noti("rpc connect success");
-
+			console.log("rpc connect success");
+			console.log("init step 3/3");
 			return { api, keyring };
 		} catch (e) {
 			antdHelper.noti("has error");
@@ -217,20 +222,21 @@ function Home() {
 		// if (unsubBalance) {
 		// 	unsubBalance();
 		// }
+		console.log("WINDOW_API: " + window.api);
 		unsubBalance = await window.api?.query.system.account(address, ({ nonce, data }: { nonce: number, data: AccountInfo['data'] }) => {
-			antdHelper.noti('Nonce:' + nonce);
-			antdHelper.noti('Free balance:' + data.free.toString()); // Assuming `data.free` is of Balance type
-			antdHelper.noti('Reserved balance:' + data.reserved.toString());
+			console.log('Nonce:' + nonce);
+			console.log('Free balance:' + data.free.toString()); // Assuming `data.free` is of Balance type
+			console.log('Reserved balance:' + data.reserved.toString());
 
 			// If you have specific handlers or state updates in React
 			const availableB = formatter.fixedBigInt(data.free.toBigInt() / (1n * 10n ** 18n));
 			setAvailable(availableB);
 			const stakingB = formatter.fixedBigInt(data.reserved.toBigInt() / (1n * 10n ** 18n));
 			setStaking(stakingB);
-			const nominateB = formatter.fixedBigInt(data.feeFrozen.toBigInt() / (1n * 10n ** 18n));
+			const nominateB = 0; //formatter.fixedBigInt(data.feeFrozen.toBigInt() / (1n * 10n ** 18n));
 			setNominate(nominateB);
 			const all = availableB + stakingB + nominateB;
-			antdHelper.noti("Balance:" + all);
+			console.log("Balance:" + all);
 			setBalance(all);
 			loadHistoryList(address);
 		});
@@ -274,7 +280,6 @@ function Home() {
 				return;
 			}
 			const { address, amount } = ret;
-			antdHelper.noti('address:' + address + ' amount:' + amount );
 			const extrinsic = window.api?.tx.balances.transfer(address, amount);
 			if (!extrinsic) {
 				console.error('Failed to create extrinsic');
@@ -286,6 +291,7 @@ function Home() {
 			if (msg.includes("MultiAddress")) {
 				msg = "Please input the correct amount and receiving address.";
 			}
+			console.log(msg);
 			antdHelper.alertError(msg);
 		}
 	};
@@ -354,7 +360,8 @@ function Home() {
 		const ret = await request(url);
 		
 		if (ret.msg != "ok") {
-			return antdHelper.notiError(ret.msg || "Request Error");
+			return ;
+			// return antdHelper.notiError(ret.msg || "Request Error");
 		}
 		if( typeof ret.data != "object" ) return ;
 		const data = ret.data as ResponseData;
