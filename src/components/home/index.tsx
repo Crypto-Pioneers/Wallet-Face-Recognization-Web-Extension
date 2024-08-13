@@ -136,7 +136,7 @@ function Home() {
 
 	useEffect(() => {
 		const url = store.get<string>("custom-node");
-		console.log("EXTENSION STARTING")
+
 		if (url) {
 			setCustomRPC(url);
 		}
@@ -169,14 +169,16 @@ function Home() {
 			if (api) {
 				window.api = api;
 				window.keyring = keyring;
+				
 				console.log(window.api)
 				console.log(window.keyring)
 				if (customRPC && url && url != "wss://testnet-rpc1.cess.cloud/ws/") {
 					store.set<string>("custom-node", url);
 				}
 			}
-			console.log("rpc connect success");
+			console.log(config.nodeURL);
 			console.log("init step 3/3");
+			createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
 			return { api, keyring };
 		} catch (e) {
 			antdHelper.noti("has error");
@@ -292,7 +294,7 @@ function Home() {
 				msg = "Please input the correct amount and receiving address.";
 			}
 			console.log(msg);
-			antdHelper.alertError(msg);
+			antdHelper.notiError(msg);
 		}
 	};
 
@@ -310,7 +312,7 @@ function Home() {
 			}
 			submitTx(extrinsic);
 		} catch (e) {
-			antdHelper.alertError((e as Error).message);
+			antdHelper.notiError((e as Error).message);
 		}
 	};
 
@@ -336,7 +338,7 @@ function Home() {
 				submitTx(extrinsic);
 			}
 		} catch (e) {
-			antdHelper.alertError((e as Error).message);
+			antdHelper.notiError((e as Error).message);
 		}
 	};
 
@@ -398,35 +400,35 @@ function Home() {
 
 	const formatParams = (obj: FormatParam): {address: string, amount: bigint} | null => {
 		if (!obj.amount) {
-			antdHelper.alertError("Amount is required.");
+			antdHelper.notiError("Amount is required.");
 			return null;
 		}
 		if (obj.amount.length > 29) {
-			antdHelper.alertError("The amount character length exceeds the limit.");
+			antdHelper.notiError("The amount character length exceeds the limit.");
 			return null;
 		}
 		if (isNaN(parseFloat(obj.amount))) {
-			antdHelper.alertError("The Amount allow only numbers input.");
+			antdHelper.notiError("The Amount allow only numbers input.");
 			return null;
 		}
 		const amount = parseFloat(obj.amount);
 		if (amount < 0) {
-			antdHelper.alertError("Amount error.");
+			antdHelper.notiError("Amount error.");
 			return null;
 		}
 		if (amount > available) {
 			antdHelper.noti('amount: ' + amount + ' available: ' + available);
-			antdHelper.alertError("Insufficient Balance");
+			antdHelper.notiError("Insufficient Balance");
 			return null;
 		}
 		const ret_amount = BigInt(amount * 1e18);
 
 		if (!obj.address) {
-			antdHelper.alertError("Account address is required.");
+			antdHelper.notiError("Account address is required.");
 			return null;
 		}
 		if (obj.address.length < 40 || obj.address.length > 49) {
-			antdHelper.alertError("Please input the correct receiving address.");
+			antdHelper.notiError("Please input the correct receiving address.");
 			return null;
 		}
 		return { address: obj.address, amount: ret_amount };
@@ -454,16 +456,12 @@ function Home() {
 		try {
 			setLoading("signature");
 			// sdk = new Common(window.api, window.keyring);
-			antdHelper.noti(" -------ppppppppp ")
-			antdHelper.noti(account.mnemonic);
-			antdHelper.noti(" ppppppppp------- ")
 			const wallet = window.keyring?.addFromMnemonic(account.mnemonic);
 			if (!wallet) {
 				console.error('Failed to create wallet');
 				return;
 			}
 			const hash = await extrinsic.signAndSend(wallet);
-			antdHelper.noti("txhash: " + hash);
 			// ret = await sdk.signAndSend(account.address, extrinsic, subState);
 			ret = { msg: "ok", data: hash };
 			if (ret.msg == "ok") {
@@ -476,7 +474,7 @@ function Home() {
 					backToDashboard();
 				}
 			} else {
-				antdHelper.alertError(ret.msg, ret.data);
+				antdHelper.notiError(ret.msg + ret.data);
 			}
 		} catch (e) {
 			let msg = (e as Error).message || e as Error;
@@ -484,9 +482,9 @@ function Home() {
 				msg = JSON.stringify(msg);
 			}
 			if (msg.includes("balance too low")) {
-				antdHelper.alertError("Insufficient Balance");
+				antdHelper.notiError("Insufficient Balance");
 			} else {
-				antdHelper.alertError(msg);
+				antdHelper.notiError(msg);
 			}
 		} finally {
 			setLoading(null);
@@ -507,14 +505,14 @@ function Home() {
 
 	// const onReConnect = async (e: any) => {
 	// 	let timeout = setTimeout(function () {
-	// 		antdHelper.alertError("Connect timeout");
+	// 		antdHelper.notiError("Connect timeout");
 	// 	}, 5000);
 	// 	let { api } = await init(customRPC);
 	// 	clearTimeout(timeout);
 	// 	if (api) {
 	// 		antdHelper.notiOK("Connected");
 	// 	} else {
-	// 		antdHelper.alertError("Connect failed");
+	// 		antdHelper.notiError("Connect failed");
 	// 	}
 	// };
 

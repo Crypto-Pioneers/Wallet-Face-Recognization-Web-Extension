@@ -157,7 +157,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			if (res.status == 200) {
 				const resStateText = res.data.status;
 				if (resStateText == 'Success') {
-					antdHelper.notiOK("Face Vector Read Successfully. Thanks for using Anon ID, no further action needed, verify at conference for access. ");
+					antdHelper.notiOK("Face Vector Read Successfully. Thanks for using Anon ID, no further action needed, verify at conference for access");
 					clearInterval(intervalEnroll);
 					
 					setEnrollSpinActive(false);
@@ -169,7 +169,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 					}
 					antdHelper.noti(res.data.msg);
 				} else if (resStateText == 'Already Exist') {
-					antdHelper.noti('Face Vector Already Registered. Please Verify.');
+					antdHelper.noti('Face Vector Already Registered. Please Verify');
 					clearInterval(intervalEnroll);
 					setEnrollSpinActive(false);
 
@@ -238,13 +238,13 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			if (res.status == 200) {
 				const resStateText = res.data.status;
 				if (resStateText == 'Success') {
-					antdHelper.notiOK("Face Vector verified Successfully.");
+					antdHelper.notiOK("Face Vector verified Successfully");
 					clearInterval(intervalVerify);
 					setCessAddr(res.data.address, res.data.mnemonic);
 					setVerifySpinActive(false);
 					_handleModalClose();
 				} else if (resStateText == 'No Users') {
-					antdHelper.noti('Face Vector not Registered. Please enroll.');
+					antdHelper.noti('Face Vector not Registered. Please enroll');
 					// setCameraCaptureStart(true);
 				} else if (resStateText == 'Move Closer') {
 					antdHelper.noti('Please Move Closer!');
@@ -268,7 +268,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			}
 		}).catch(err=>{
 			console.log('err', err);
-			// antdHelper.noti('Server Error. Please contact dev team.');		
+			antdHelper.noti('Server Error. Please contact dev team.');		
 		})
 	}
 
@@ -323,7 +323,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 				} else if (resStateText == 'Liveness check failed') {
 					antdHelper.noti('Liveness check failed!');
 				} else if (resStateText == 'Face is too large'){
-					antdHelper.noti('Face is too large.');
+					antdHelper.noti('Face is too large');
 				} else if (resStateText == 'Spoof'){
 					antdHelper.noti('Spoof');
 				} else {
@@ -334,7 +334,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			}
 		}).catch(err=>{
 			console.log('err', err);
-			// antdHelper.noti('Server Error. Please contact dev team');
+			antdHelper.noti('Server Error. Please contact dev team');
 		})
 
 	}
