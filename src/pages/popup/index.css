@@ -545,3 +545,30 @@ body {
 		}
 	}
 }
+
+/* Custom CSS file or <style> tag in your component file */
+
+.ant-notification-notice {
+	padding: 8px 10px !important;
+	width: max-content !important;
+}
+
+
+.ant-notification-notice-message {
+	font-size: 14px !important;
+	font-weight: 500;
+	margin-bottom: 0px !important;
+}
+
+.ant-notification-notice-icon {
+	width: 20px;
+	height: 20px;
+	font-size: 16px;
+}
+
+.ant-notification-notice-close {
+	right: 7px !important;
+    top: 9px !important;
+	width: 20px !important;
+	height: 20px !important;
+}

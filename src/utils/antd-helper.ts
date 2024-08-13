@@ -48,10 +48,8 @@ export function confirm(title: string): Promise<boolean> {
 }
 
 notification.config({
-  placement: "topRight",
-  top: 70,
-  duration: 5,
-  rtl: true,
+  top: 90,
+  duration: 4
 });
 
 export function noti(message: string): void {
