@@ -2,7 +2,7 @@ import logo from '../../assets/img/logo.png';
 
 const Header = () => {
     return (
-        <div className="logo flex h-[90px] w-[100%] justify-center">
+        <div className="part2">
             <img src={logo} alt="Navigation Logo"/>
         </div>
     )

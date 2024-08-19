@@ -373,8 +373,8 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	}, [WebcamStarted]);
 
 	return WebcamStarted ? (
-		<div className="flex flex-col justify-center gap-y-[15px]">
-			<div style={{height:`calc(${height}px + 10px)`, width: `calc(${width}px + 10px)`}} className="rounded-[10px] p-[5px] bg-white relative">
+		<div className="content">
+			<div style={{height:`calc(${height}px + 10px)`, width: `calc(${width}px + 10px)`}} className="sub1">
 				{/* {!WebCamRef? && (
 					<SpinWrapper>
 						<Spin size="large" />
@@ -385,9 +385,9 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 						{/* {WebcamStarted ? ( */}
 						<Webcam
 							audio={false}
-							height={resolution.height}
+							height={240}
 							width={MainWidth}
-							videoConstraints={{ width: MainWidth, height: resolution.height }}
+							videoConstraints={{ width: MainWidth, height: 240 }}
 							style={View}
 							onLoadedMetadata={()=>{
 								handleWebcamStream()
@@ -403,20 +403,20 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 				</div>
 			</div>
 			<div>
-				<div className="flex flex-col justify-center gap-y-[15px]">
-					<div className="w-[100%] flex justify-between">
-						<button onClick={enrollUser} className={`${selectButton =='enroll' ? 'active':''} border border-white text-[14px] w-[100px] py-1 text-white rounded-[5px]`}>ENROLL
+				<div className="sub2">
+					<div className="subContent1" style={{display: 'flex', justifyContent: 'space-between'}}>
+						<button onClick={enrollUser} className={`${selectButton =='enroll' ? 'active':''} buttonClass`}>ENROLL
 							<Spin spinning={isEnrollSpinActive} size="small"  style={{marginLeft:'10px'}}></Spin>
 						</button>
-						<button onClick={verifyUser} className={`${selectButton =='verify'?'active':''} border border-white  text-[14px] w-[100px] py-1 text-white rounded-[5px]`}>VERIFY
+						<button onClick={verifyUser} className={`${selectButton =='verify'?'active':''} buttonClass`}>VERIFY
 							<Spin spinning={isVerifySpinActive} size="small" style={{marginLeft:'10px'}}></Spin>
 						</button>
-						<button onClick={recoverUser} className={`${selectButton =='recover'?'active':''} border border-white text-[14px] w-[100px] py-1 text-white rounded-[5px]`}>RECOVER
+						<button onClick={recoverUser} className={`${selectButton =='recover'?'active':''} buttonClass`}>RECOVER
 							<Spin spinning={isRecoverSpinActive} size="small" style={{marginLeft:'10px'}}></Spin>
 						</button>
 					</div>
 					<div>
-						<input placeholder="Enter your recover key" className="border border-sky-800 bg-white px-[5px] py-1 text-[14px] text-[#07385e] rounded-[5px] w-[100%] block" value={recoveryKey} onChange={(e) => setRecoveryKey(e.target.value)}/>
+						<input placeholder="Enter your recover key" className="subContent2" value={recoveryKey} onChange={(e) => setRecoveryKey(e.target.value)}/>
 					</div>
 				</div>
 			</div>

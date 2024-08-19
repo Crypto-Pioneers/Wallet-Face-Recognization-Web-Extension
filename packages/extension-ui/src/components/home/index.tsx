@@ -3,7 +3,7 @@ import React from 'react';
 
 import { styled } from '../../styled.js';
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Spin, Tooltip } from "antd";
 import copy from "copy-to-clipboard";
 import moment from "moment";
@@ -11,6 +11,13 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Keyring } from '@polkadot/keyring';
 import { typesBundle } from '@polkadot/apps-config';
 import QrSvg from "@wojtekmaj/react-qr-svg";
+import { validateSeed } from '@polkadot/extension-ui/messaging';
+import { objectSpread } from '@polkadot/util';
+import { createAccountSuri } from '../../messaging.js';
+import { ActionContext } from '../../components/index.js';
+import type { AccountInfo } from '../../Popup/ImportSeed/index.js';
+import { useTranslation } from '../../hooks/index.js';
+import { DEFAULT_TYPE } from '../../util/defaultType.js';
 
 import CameraComp from "../camera";
 import Header from "../header";
@@ -102,6 +109,8 @@ let historyCount = 0;
 let historyTotalPage = 0;
 
 function Home({ className }: Props): React.ReactElement<Props> {
+  const { t } = useTranslation();
+  const onAction = useContext(ActionContext);
 	const [loading, setLoading] = useState<string | null>(null);
 	const [current, setCurrent] = useState<string>("login");
 	const [accounts, setAccounts] = useState<Account[]>([]);
@@ -154,6 +163,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 
 	useEffect(() => {
 		const url = store.get<string>("custom-node");
+    setCurrent('login');
     setLoading(null);
 
 		if (url) {
@@ -197,7 +207,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 			}
 			console.log(config.nodeURL);
 			console.log("init step 3/3");
-			createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
+			// createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
 			return { api, keyring };
 		} catch (e) {
 			antdHelper.noti("has error");
@@ -218,6 +228,29 @@ function Home({ className }: Props): React.ReactElement<Props> {
 	};
 
 	const createWalletTestFromFace = (addr: string, mnemonic: string) => {
+    const suri = `${mnemonic || ''}`;
+    const genesis = '';
+	const type = DEFAULT_TYPE;
+    validateSeed(suri, type)
+      .then((validatedAccount) => {
+        const account = objectSpread<AccountInfo>({}, validatedAccount, { genesis, type });
+        const name = "Dev";
+        const password = " ";
+
+        createAccountSuri(name, password, account.suri, type, account.genesis)
+          .then(() => onAction('/'))
+          .catch((error): void => {
+            console.error(error);
+            return ;
+          });
+        })
+		.catch(() => {
+			antdHelper.noti(
+				t('Invalid mnemonic seed')
+			);
+			return ;
+		});
+
 		const addrFromFace = addr;
 		const acc = {
 			address: addrFromFace,
@@ -227,7 +260,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 		setAccounts([acc]);
 		setAccount(acc);
 		accounts;
-		setCurrent("dashboard");
+		// setCurrent("dashboard");
 
 		// subBalance(addrFromFace);
 		setAvailable(0);
@@ -538,17 +571,17 @@ function Home({ className }: Props): React.ReactElement<Props> {
 	return (
 		<div className={className}>
 			{	current == "login" &&
-				<div className="px-[15px] pt-[15px] pb-[45px] flex flex-col justify-start h-[100%] items-center">
+				<div className="headerPart">
 					<div>
-						<span className="h-[25px] mb-[-6px] ml-[2px] w-[100%] flex flex-col items-center justify-center text-white align-middle">
-							<h1 className="text-sm font-bold tracking-tighter text-white"> ANON ID</h1>
+						<span className="part1">
+							<h1 className="content1">ANON ID</h1>
 						</span>
 						<Header />
 					</div>
-					<div className="rounded-[3px] py-[10px]">
+					<div className="part3">
 						<CameraComp setCessAddr={createWalletTestFromFace} />
 					</div>
-					<p className="text-[12px] font-black text-white tracking-[0.1px] text-bold block py-[45px] text-center">Anon ID does not store any faces only vector arrays</p>
+					<p className="part4">Anon ID does not store any faces only vector arrays</p>
 				</div>
 			}
 			<div className={current == "dashboard" ? "dashboard" : "none"}>
@@ -1309,11 +1342,116 @@ export default styled(Home)<Props>`
     }
   }
 
-  /* Custom CSS file or <style> tag in your component file */
+  .headerPart {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    .part1 {
+      height: 25px;
+      width: 100%;
+      margin: 0px 0px -6px 2px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      color: white;
+      vertical-align: middle;
+
+      .content1 {
+        font-size: 0.875rem; /* text-sm */
+        font-weight: bold; /* font-bold */
+        letter-spacing: -0.05em; /* tracking-tighter */
+        color: white;
+      }
+    }
+
+    .part2 {
+      display: flex; /* flex */
+      height: 90px; /* h-[90px] */
+      width: 100%; /* w-[100%] */
+      justify-content: center; /* justify-center */
+    }
+
+    .part3 {
+      border-radius: 3px; /* rounded-[3px] */
+      padding-top: 5px; /* py-[10px] */
+      padding-bottom: 5px; /* py-[10px] */
+
+      .content {
+        display: flex; /* flex */
+        flex-direction: column; /* flex-col */
+        justify-content: center; /* justify-center */
+        row-gap: 5px; /* gap-y-[5px] */
+
+        .sub1 {
+          border-radius: 10px; /* rounded-[10px] */
+          padding: 5px; /* p-[5px] */
+          background-color: white; /* bg-white */
+          position: relative; /* relative */
+        }
+
+        .sub2 {
+          display: flex; /* flex */
+          flex-direction: column; /* flex-col */
+          justify-content: center; /* justify-center */
+          row-gap: 5px; /* gap-y-[5px] *
+
+          .subContent1 {
+            width: 100%; /* w-[100%] */
+            display: flex; /* flex */
+            justify-content: space-between; /* justify-between */
+
+            .buttonClass {
+              border: 1px solid #3c6c79; /* border and border-white */
+              font-size: 14px; /* text-[14px] */
+              width: 120px; /* w-[120px] */
+              padding-top: 0.25rem; /* py-1 */
+              padding-bottom: 0.25rem; /* py-1 */
+              color: white; /* text-white */
+              border-radius: 5px; /* rounded-[5px] */
+              background-color: #447c88;
+            }
+          }
+
+          .subContent2 {
+            border: 1px solid #07385e; /* border and border-sky-800 */
+            background-color: rgb(55, 64, 73); /* bg-white */
+            padding-left: 5px; /* px-[5px] */
+            padding-right: 5px; /* px-[5px] */
+            padding-top: 0.25rem; /* py-1 */
+            padding-bottom: 0.25rem; /* py-1 */
+            font-size: 14px; /* text-[14px] */
+            color: white; /* text-white */
+            border-radius: 5px; /* rounded-[5px] */
+            width: 100%; /* w-[100%] */
+            display: block; /* block */
+            box-sizing: border-box;
+          }
+
+          .subContent3 {
+            cursor: pointer; /* cursor-pointer */
+          }
+        }
+      }
+    }
+
+    .part4 {
+      font-size: 12px; /* text-[12px] */
+      font-weight: 900; /* font-black */
+      color: white; /* text-white */
+      letter-spacing: 0.1px; /* tracking-[0.1px] */
+      display: block; /* block */
+      text-align: center; /* text-center */
+    }
+  }
 
   .ant-notification-notice {
     padding: 8px 10px !important;
     width: max-content !important;
+    text-align: left !important;
   }
 
 
