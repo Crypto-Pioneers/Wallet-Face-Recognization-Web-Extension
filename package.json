@@ -43,8 +43,19 @@
     "test": "EXTENSION_PREFIX='test' polkadot-dev-run-test --loader ./packages/extension-mocks/src/loader-empty.js --env browser ^:.spec.tsx",
     "test:one": "EXTENSION_PREFIX='test' polkadot-dev-run-test --env browser"
   },
+  "dependencies": {
+    "@polkadot/apps-config": "^0.142.1",
+    "@wojtekmaj/react-qr-svg": "^2.0.0",
+    "antd": "^5.20.1",
+    "face-api.js": "^0.22.2",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "react-bodymovin": "^2.0.0",
+    "react-webcam": "^7.2.0"
+  },
   "devDependencies": {
     "@polkadot/dev": "^0.79.3",
+    "@types/lodash": "^4",
     "@types/node": "^20.10.5",
     "i18next-scanner": "^4.4.0",
     "sinon-chrome": "^3.0.1"

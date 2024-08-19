@@ -5,7 +5,7 @@ import { faArrowLeft, faCog, faPlusCircle, faSearch } from '@fortawesome/free-so
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
-import logo from '../assets/pjs.svg';
+import logo from '../assets/pjs.png';
 import { ActionContext } from '../components/index.js';
 import InputFilter from '../components/InputFilter.js';
 import Link from '../components/Link.js';
@@ -113,7 +113,7 @@ function Header ({ children, className = '', onFilter, showAdd, showBackArrow, s
               />
             )
           }
-          <span className='logoText'>{text || 'polkadot{.js}'}</span>
+          <span className='logoText'>{text || 'anonid wallet'}</span>
         </div>
         {showSearch && (
           <div className={`searchBarWrapper ${isSearchOpen ? 'selected' : ''}`}>
@@ -214,9 +214,9 @@ export default React.memo(styled(Header)<Props>`
       margin-left: 24px;
 
       .logo {
-        height: 28px;
-        width: 28px;
-        margin: 8px 12px 12px 0;
+        height: 36px;
+        width: 36px;
+        margin: 0px 4px 4px 0;
       }
 
       .logoText {

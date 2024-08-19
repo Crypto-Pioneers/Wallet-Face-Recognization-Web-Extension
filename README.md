@@ -1,4 +1,4 @@
-# polkadot{.js} extension
+# anonid wallet extension
 
 A very simple scaffolding browser extension that injects a [@polkadot/api](https://github.com/polkadot-js/api) Signer into a page, along with any associated accounts, allowing for use by any dapp. This is an extensible POC implementation of a Polkadot/Substrate browser signer.
 
@@ -21,7 +21,7 @@ Find out more about how to use the extension as a Dapp developper, cookbook, as 
 2. Install dependencies via `yarn install`
 3. Build all packages via `yarn build`
   - The `/packages/extension/build` directory will contain the exact code used in the add-on, and should exactly match the uncompressed `master-ff-build`.
-  
+
 NOTE: If you would like to regenerate the compressed `master-ff-build.zip`, and `master-ff-src.zip` files run: `yarn build:zip:ff`
 
 ## Development version

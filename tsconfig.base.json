@@ -2,6 +2,7 @@
   "extends": "@polkadot/dev/config/tsconfig.json",
 	"compilerOptions": {
 		"composite": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
     /* FIXME Dropzone is problematic with nodenext resolution */
     "module": "ESNext",
     "moduleResolution": "Bundler",

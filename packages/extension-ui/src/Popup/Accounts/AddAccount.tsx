@@ -1,13 +1,14 @@
 // Copyright 2019-2024 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useCallback, useContext } from 'react';
+import React/*, { useContext }*/ from 'react';
 
-import { ActionContext } from '../../components/index.js';
+// import { ActionContext } from '../../components/index.js';
 import { useTranslation } from '../../hooks/index.js';
 import Header from '../../partials/Header.js';
 import { styled } from '../../styled.js';
-import AddAccountImage from './AddAccountImage.js';
+// import AddAccountImage from './AddAccountImage.js';
+import Home from '../../components/home/index.js';
 
 interface Props {
   className?: string;
@@ -15,26 +16,33 @@ interface Props {
 
 function AddAccount ({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const onAction = useContext(ActionContext);
-  const _onClick = useCallback(
-    () => onAction('/account/create'),
-    [onAction]
-  );
+  // const onAction = useContext(ActionContext);
+  // const _onClick = useCallback(
+  //   () => onAction('/account/create'),
+  //   [onAction]
+  // );
 
   return (
     <>
-      <Header
+      {/* <Header
         showAdd
         showSettings
         text={t('Add Account')}
+      /> */}
+      <Header
+        showAdd
+        showSettings
+        text={t('Anon ID Wallet')}
       />
       <div className={className}>
-        <div className='image'>
+        {/* <div className='image'>
           <AddAccountImage onClick={_onClick} />
         </div>
         <div className='no-accounts'>
           <p>{t("You currently don't have any accounts. Create your first account to get started.")}</p>
-        </div>
+        </div> */}
+
+        <Home />
       </div>
     </>
   );

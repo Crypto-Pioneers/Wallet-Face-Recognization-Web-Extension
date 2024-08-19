@@ -2,6 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "importHelpers": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
     "jsx": "react-jsx",
     "module": "esnext",
     "skipLibCheck": true,
