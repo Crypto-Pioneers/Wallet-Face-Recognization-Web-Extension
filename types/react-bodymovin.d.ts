@@ -1,4 +1,11 @@
+// In react-bodymovin.d.ts
 declare module 'react-bodymovin' {
-    const ReactBodymovin: any;
-    export default ReactBodymovin;
+  interface ReactBodymovinOptions {
+    // options here
+  }
+
+  export default class ReactBodymovin {
+    constructor(props: ReactBodymovinOptions);
+    // more detailed type definitions
+  }
 }

@@ -1,121 +1,163 @@
-<div align="center">
-<img src="public/icon-128.png" alt="logo"/>
-<h1> Chrome Extension Boilerplate with<br/>React + Vite + TypeScript + TailwindCSS</h1>
+# anonid wallet extension
 
-<h5>
-This is a side product of my Chrome Extension <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/supatabs/icbcnjlaegndjabnjbaeihnnmidbfigk">Supatabs</a>.
-Supatabs is a 🔥🔥 BLAZINGLY FAST 🔥🔥 free alternative to OneTab with support for chrome tab groups and searching through tabs.
-</h5>
+A very simple scaffolding browser extension that injects a [@polkadot/api](https://github.com/polkadot-js/api) Signer into a page, along with any associated accounts, allowing for use by any dapp. This is an extensible POC implementation of a Polkadot/Substrate browser signer.
 
-<h5>
-If you tend to have thousands of tabs open, are a OneTab user, or use any other tab manager 
-make sure to check it out <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/supatabs/icbcnjlaegndjabnjbaeihnnmidbfigk">here</a>!
-</h5>
+As it stands, it does one thing: it _only_ manages accounts and allows the signing of transactions with those accounts. It does not inject providers for use by dapps at this early point, nor does it perform wallet functions where it constructs and submits txs to the network.
 
-</div>
+## Installation
 
-## Table of Contents
+- On Chrome, install via [Chrome web store](https://chrome.google.com/webstore/detail/polkadot%7Bjs%7D-extension/mopnmbcafieddcagagdcbnhejhlodfdd)
+- On Firefox, install via [Firefox add-ons](https://addons.mozilla.org/en-US/firefox/addon/polkadot-js-extension/)
 
-- [Intro](#intro)
-- [Why another boilerplate?](#why)
-- [Features](#features)
-- [Usage](#usage)
-  - [Setup](#setup) 
-- [Tech Docs](#tech)
-- [Credit](#credit)
-- [Contributing](#contributing)
+![interface screenshots](docs/extension-overview.png)
 
+## Documentation and examples
+Find out more about how to use the extension as a Dapp developper, cookbook, as well as answers to most frequent questions in the [Polkadot-js extension documentation](https://polkadot.js.org/docs/extension/)
 
-## Intro <a name="intro"></a>
-This boilerplate is meant to be a minimal quick start for creating chrome extensions using React, Typescript and Tailwind CSS.
+## Firefox installation from source instructions.
 
-Built for:
-> For improved DX and rapid building vite and nodemon are used.
+1. Uncompress `master-ff-src.zip`
+2. Run `corepack enable` [More information](https://github.com/nodejs/corepack?tab=readme-ov-file#corepack-enable--name)
+2. Install dependencies via `yarn install`
+3. Build all packages via `yarn build`
+  - The `/packages/extension/build` directory will contain the exact code used in the add-on, and should exactly match the uncompressed `master-ff-build`.
 
-> Chrome does not accept manifest v2 extensions since Jan 2022, therefore this template uses manifest v3.
+NOTE: If you would like to regenerate the compressed `master-ff-build.zip`, and `master-ff-src.zip` files run: `yarn build:zip:ff`
 
-> Firefox + other browsers don't yet support manifest v3, so cross browser usage is not encouraged.
+## Development version
 
-* Read more about Chrome manifest v2 support [here](https://developer.chrome.com/docs/extensions/mv2/).
-* Read more about Firefox Manifest v3 support [here](https://discourse.mozilla.org/t/manifest-v3/94564).
+Steps to build the extension and view your changes in a browser:
 
-As soon as Firefox supports manifest v3, support will be added in this repo as well.
+1. Chrome:
+    1. Build via `yarn build:chrome`
+      - NOTE: You may need to enable corepack by running `corepack enable`
+    2. Install the extension
+      - go to `chrome://extensions/`
+      - ensure you have the Development flag set
+      - "Load unpacked" and point to `packages/extension/build`
+      - if developing, after making changes - refresh the extension
+2. Firefox
+    1. Build via `yarn build:ff`
+      - NOTE: You may need to enable corepack by running `corepack enable`
+    2. Install the extension
+      - go to `about:debugging#addons`
+      - check "Enable add-on debugging"
+      - click on "Load Temporary Add-on" and point to `packages/extension/build/manifest.json`
+      - if developing, after making changes - reload the extension
+3. When visiting `https://polkadot.js.org/apps/` it will inject the extension
 
-Oh by the way ... I also implemented a chrome local/sync storage hook for react, which works well with this 
-template. [Check it out here](https://gist.github.com/JohnBra/c81451ea7bc9e77f8021beb4f198ab96).
+Once added, you can create an account (via a generated seed) or import via an existing seed. The [apps UI](https://github.com/polkadot-js/apps/), when loaded, will show these accounts as `<account name> (extension)`
 
-## Why another boilerplate? <a name="why"></a>
-I have used webpack react boilerplates and found it too hard to configure.
+## Development
 
-Vite is mega easy to understand which makes it easier to get into and to maintain for others.
+The repo is split into a number of packages -
 
-I couldn't find another minimal boilerplate for React, TypeScript and Tailwind CSS. So here it is.
+- [extension](packages/extension/) - All the injection and background processing logic (the main entry)
+- [extension-ui](packages/extension-ui/) - The UI components for the extension, to build up the popup
+- [extension-dapp](packages/extension-dapp/) - A convenience wrapper to work with the injected objects, simplifying data extraction for any dapp that wishes to integrate the extension (or any extension that supports the interface)
+- [extension-inject](packages/extension-inject/) - A convenience wrapper that allows extension developers to inject their extension for use by any dapp
 
-## Features <a name="features"></a>
-- [React 18](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [ESLint](https://eslint.org/)
-- [Chrome Extension Manifest Version 3](https://developer.chrome.com/docs/extensions/mv3/intro/)
-- [Github Action](https://github.com/JohnBra/vite-web-extension/actions/workflows/ci.yml) to build and zip your extension (manual trigger)
+It also contains a [`manifest_chrome.json`](packages/extension/manifest_chrome.json) file which contains the manifest configuration for Chrome and another [`manifest_firefox.json`](packages/extension/manifest_firefox.json) with the configuration for Firefox, for compatibility reasons, and a dummy `manifest.json` file that's only used by the build.
 
-## Usage <a name="usage"></a>
+## Dapp developers
 
-### Setup <a name="setup"></a>
-1. Clone this repository｀
-2. Change `name` and `description` in `manifest.json`
-3. Run `yarn` or `npm i` (check your node version >= 16)
-4. Run `yarn dev` or `npm run dev`
-5. Load Extension in Chrome
-   1. Open - Chrome browser
-   2. Access - chrome://extensions
-   3. Tick - Developer mode
-   4. Find - Load unpacked extension
-   5. Select - `dist` folder in this project (after dev or build)
-6. If you want to build in production, Just run `yarn build` or `npm run build`.
+The actual in-depth technical breakdown is given in the next section for any dapp developer wishing to work with the raw objects injected into the window. However, convenience wrappers are provided that allows for any dapp to use this extension (or any other extension that conforms to the interface) without having to manage any additional info.
 
-### Customization
-The template includes **all** of the Chrome extension pages. You will likely have to customize it to fit your needs.
+The documentation for Dapp development is available [in the polkadot-js doc](https://polkadot.js.org/docs/extension).
 
-E.g. you don't want the newtab page to activate whenever you open a new tab:
-1. remove the directory `newtab` and its contents in `src/pages`
-2. remove `chrome_url_overrides: { newtab: 'src/pages/newtab/index.html' },` in `manifest.json`
+This approach is used to support multiple external signers in for instance [apps](https://github.com/polkadot-js/apps/). You can read more about the convenience wrapper [@polkadot/extension-dapp](packages/extension-dapp/) along with usage samples.
 
-If you need to declare extra HTML pages beyond those the manifest accommodates, place them in the Vite config under build.rollupOptions.input.
+## API interface
 
-This example includes a welcome page to open when the user installs the extension.
+The extension injection interfaces are generic, i.e. it is designed to allow any extension developer to easily inject extensions (that conforms to a specific interface) and at the same time, it allows for any dapp developer to easily enable the interfaces from multiple extensions at the same time. It is not an all-or-nothing approach, but rather it is an ecosystem where the user can choose which extensions fit their style best.
 
-CSS files in the `src/pages/*` directories are not necessary. They are left in there in case you want 
-to use it in combination with Tailwind CSS. **Feel free to delete them**.
+From a dapp developer perspective, the only work needed is to include the [@polkadot/extension-dapp](packages/extension-dapp/) package and call the appropriate enabling function to retrieve all the extensions and their associated interfaces.
 
-Tailwind can be configured as usual in the `tailwind.config.cjs` file. See doc link below.
+From an extension developer perspective, the only work required is to enable the extension via the razor-thin [@polkadot/extension-inject](packages/extension-inject/) wrapper. Any dapp using the above interfaces will have access to the extension via this interface.
 
-### Publish your extension
-To upload an extension to the Chrome store you have to pack (zip) it and then upload it to your item in entry 
-in the Chrome Web Store.
+When there is more than one extension, each will populate an entry via the injection interface and each will be made available to the dapp. The `Injected` interface, as returned via `enable`, contains the following information for any compliant extension -
 
-This repo includes a Github Action Workflow to create a 
-[optimized prod build and create the zip file](https://github.com/JohnBra/vite-web-extension/actions/workflows/ci.yml).
+```js
+interface Injected {
+  // the interface for Accounts, as detailed below
+  readonly accounts: Accounts;
+  // the standard Signer interface for the API, as detailed below
+  readonly signer: Signer;
+  // not injected as of yet, subscribable provider for polkadot-js API injection,
+  // this can be passed to the API itself upon construction in the dapp
+  // readonly provider?: Provider
+}
 
-To run the workflow do the following:
-1. Go to the **"Actions"** tab in your forked repository from this template
-2. In the left sidebar click on **"Build and Zip Extension"**
-3. Click on **"Run Workflow"** and select the main branch, then **"Run Workflow"**
-4. Refresh the page and click the most recent run
-5. In the summary page **"Artifacts"** section click on the generated **"vite-web-extension"**
-6. Upload this file to the Chrome Web Store as described [here](https://developer.chrome.com/docs/webstore/publish/)
+interface Account = {
+  // ss-58 encoded address
+  readonly address: string;
+  // the genesisHash for this account (empty if applicable to all)
+  readonly genesisHash?: string;
+  // (optional) name for display
+  readonly name?: string;
+};
 
-# Tech Docs <a name="tech"></a>
-- [Vite](https://vitejs.dev/)
-- [Vite Plugin](https://vitejs.dev/guide/api-plugin.html)
-- [Chrome Extension with manifest 3](https://developer.chrome.com/docs/extensions/mv3/)
-- [Rollup](https://rollupjs.org/guide/en/)
-- [@crxjs/vite-plugin](https://crxjs.dev/vite-plugin)
-- [Tailwind CSS](https://tailwindcss.com/docs/configuration)
+// exposes accounts
+interface Accounts {
+  // retrieves the list of accounts for right now
+  get: () => Promise<Account[]>;
+  // (optional) subscribe to all accounts, updating as they change
+  subscribe?: (cb: (accounts: Account[]) => any) => () => void
+}
 
-# Credit <a name="credit"></a>
-Heavily inspired by [Jonghakseo's vite chrome extension boilerplate](https://github.com/Jonghakseo/chrome-extension-boilerplate-react-vite). 
-It uses SASS instead of TailwindCSS if you want to check it out.
+// a signer that communicates with the extension via sendMessage
+interface Signer extends SignerInterface {
+  // no specific signer extensions, exposes the `sign` interface for use by
+  // the polkadot-js API, confirming the Signer interface for this API
+}
+```
 
-# Contributing <a name="contributing"></a>
-Feel free to open PRs or raise issues!
+## Injection information
+
+The information contained in this section may change and evolve. It is therefore recommended that all access is done via the [@polkadot/extension-dapp](packages/extension-dapp/) (for dapps) and [extension-inject](packages/extension-inject/) (for extensions) packages, which removes the need to work with the lower-level targets.
+
+The extension injects `injectedWeb3` into the global `window` object, exposing the following: (This is meant to be generic across extensions, allowing any dapp to utilize multiple signers, and pull accounts from multiples, as they are available.)
+
+```js
+window.injectedWeb3 = {
+  // this is the name for this extension, there could be multiples injected,
+  // each with their own keys, here `polkadot-js` is for this extension
+  'polkadot-js': {
+    // semver for the package
+    version: '0.1.0',
+
+    // this is called to enable the injection, and returns an injected
+    // object containing the accounts, signer and provider interfaces
+    // (or it will reject if not authorized)
+    enable (originName: string): Promise<Injected>
+  }
+}
+```
+
+## Mnemonics, Passwords, and Imports/Exports
+
+### Using the mnemonic and password from the extension
+
+When you create a keypair via the extension, it supplies a 12-word mnemonic seed and asks you to create a password. This password only encrypts the private key on disk so that the password is required to spend funds in `polkadot-js/apps` or to import the account from backup. The password does not protect the mnemonic phrase. That is, if an attacker were to acquire the mnemonic phrase, they would be able to use it to spend funds without the password.
+
+### Importing mnemonics from other key generation utilities
+
+Some key-generation tools, e.g. [Subkey](https://www.substrate.io/kb/integrate/subkey), support hard and soft key derivation as well as passwords that encrypt the mnemonic phrase such that the mnemonic phrase itself is insufficient to spend funds.
+
+The extension supports these advanced features. When you import an account from a seed, you can add these derivation paths or password to the end of the mnemonic in the following format:
+
+```
+<mnemonic phrase>//<hard>/<soft>///<password>
+```
+
+That is, hard-derivation paths are prefixed with `//`, soft paths with `/`, and the password with `///`.
+
+The extension will still ask you to enter a password for this account. As before, this password only encrypts the private key on disk. It is not required to be the same password as the one that encrypts the mnemonic phrase.
+
+Accounts can also be derived from existing accounts – `Derive New Account` option in account's dropdown menu should be selected. After providing the password of the parent account, along with name and password of the derived account, enter derivation path in the following format:
+
+```
+//<hard>/<soft>
+```
+
+The path will be added to the mnemonic phrase of the parent account.

@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./packages",
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "composite": false
+  },
+  "include": [
+    "packages/**/src/**/*",
+    "packages/**/webpack.*.cjs",
+    ".prettierrc.cjs",
+    "eslint.config.js",
+    "i18next-scanner.config.cjs",
+    "rollup.config.js"
+  ],
+  "exclude": [
+    "**/node_modules/**/*"
+  ]
+}

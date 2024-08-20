@@ -1,61 +1,75 @@
 {
-  "name": "vite-web-extension",
-  "version": "1.2.0",
-  "description": "A simple chrome extension template with Vite, React, TypeScript and Tailwind CSS.",
-  "license": "MIT",
+  "author": "Jaco Greeff <jacogr@gmail.com>",
+  "bugs": "https://github.com/polkadot-js/extension/issues",
+  "engines": {
+    "node": ">=18.14"
+  },
+  "homepage": "https://github.com/polkadot-js/extension#readme",
+  "license": "Apache-2.0",
+  "packageManager": "yarn@4.4.0",
+  "private": true,
   "repository": {
     "type": "git",
-    "url": "https://github.com/JohnBra/web-extension.git"
+    "url": "https://github.com/polkadot-js/extension.git"
   },
-  "scripts": {
-    "build": "vite build",
-    "dev": "nodemon"
-  },
+  "sideEffects": false,
   "type": "module",
+  "version": "0.52.2",
+  "versions": {
+    "git": "0.52.2",
+    "npm": "0.52.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "yarn build:chrome && yarn build:ff",
+    "build:before": "yarn build:i18n",
+    "build:chrome": "cp ./packages/extension/manifest_chrome.json ./packages/extension/manifest.json && polkadot-dev-build-ts && yarn build:zip:chrome",
+    "build:ff": "cp ./packages/extension/manifest_firefox.json ./packages/extension/manifest.json && polkadot-dev-build-ts && yarn build:zip:ff",
+    "build:i18n": "i18next-scanner --config i18next-scanner.config.cjs",
+    "build:release": "polkadot-ci-ghact-build",
+    "build:zip": "yarn build:zip:chrome && yarn build:zip:ff",
+    "build:zip:chrome": "cp ./packages/extension/manifest_chrome.json ./packages/extension/manifest.json && yarn build:zip:dst:chrome && yarn build:zip:src:chrome",
+    "build:zip:dst:chrome": "rm -rf ./master-chrome-build.zip && cd packages/extension/build && zip -r -FS ../../../master-chrome-build.zip .",
+    "build:zip:dst:ff": "rm -rf ./master-ff-build.zip && cd packages/extension/build && zip -r -FS ../../../master-ff-build.zip .",
+    "build:zip:ff": "cp ./packages/extension/manifest_firefox.json ./packages/extension/manifest.json && yarn build:zip:dst:ff && yarn build:zip:src:ff",
+    "build:zip:src:chrome": "rm -rf ./master-chrome-src.zip && zip -r -x '*build/*' -x '*node_modules*' -FS ./master-chrome-src.zip packages .editorconfig eslint.config.js rollup.config.js CHANGELOG.md CONTRIBUTING.md i18next-scanner.config.cjs LICENSE package.json README.md tsconfig.json yarn.lock .yarnrc.yml tsconfig.base.json tsconfig.build.json tsconfig.eslint.json tsconfig.webpack.json",
+    "build:zip:src:ff": "rm -rf ./master-ff-src.zip && zip -r -x '*build/*' -x '*node_modules*' -FS ./master-ff-src.zip packages .editorconfig eslint.config.js rollup.config.js CHANGELOG.md CONTRIBUTING.md i18next-scanner.config.cjs LICENSE package.json README.md tsconfig.json yarn.lock .yarnrc.yml tsconfig.base.json tsconfig.build.json tsconfig.eslint.json tsconfig.webpack.json",
+    "clean": "polkadot-dev-clean-build",
+    "diff": "rm -rf ff-diff && sh ./scripts/diff.sh",
+    "lint": "polkadot-dev-run-lint",
+    "postinstall": "polkadot-dev-yarn-only",
+    "test": "EXTENSION_PREFIX='test' polkadot-dev-run-test --loader ./packages/extension-mocks/src/loader-empty.js --env browser ^:.spec.tsx",
+    "test:one": "EXTENSION_PREFIX='test' polkadot-dev-run-test --env browser"
+  },
   "dependencies": {
-    "@polkadot/api": "^12.3.1",
     "@polkadot/apps-config": "^0.142.1",
-    "@polkadot/keyring": "^13.0.2",
     "@wojtekmaj/react-qr-svg": "^2.0.0",
-    "antd": "^5.20.0",
-    "axios": "^1.7.3",
-    "cess-js-sdk-frontend": "^0.2.3",
+    "antd": "^5.20.1",
     "face-api.js": "^0.22.2",
+    "fs": "^0.0.1-security",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
-    "react": "^18.3.1",
     "react-bodymovin": "^2.0.0",
-    "react-dom": "^18.3.1",
-    "react-webcam": "^7.2.0",
-    "styled-components": "^6.1.12",
-    "viem": "^2.18.8",
-    "wagmi": "^2.12.2",
-    "webextension-polyfill": "^0.11.0"
+    "react-webcam": "^7.2.0"
   },
   "devDependencies": {
-    "@crxjs/vite-plugin": "^2.0.0-beta.23",
-    "@types/chrome": "^0.0.268",
-    "@types/lodash": "^4.17.7",
-    "@types/node": "^20.12.11",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.0",
-    "@types/webextension-polyfill": "^0.10.7",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "autoprefixer": "^10.4.19",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jsx-a11y": "^6.8.0",
-    "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "fs-extra": "^11.2.0",
-    "nodemon": "^3.1.0",
-    "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.4.5",
-    "vite": "^5.2.11"
+    "@polkadot/dev": "^0.79.3",
+    "@types/lodash": "^4",
+    "@types/node": "^20.10.5",
+    "i18next-scanner": "^4.4.0",
+    "sinon-chrome": "^3.0.1"
+  },
+  "resolutions": {
+    "@polkadot/api": "^12.3.1",
+    "@polkadot/keyring": "^13.0.2",
+    "@polkadot/networks": "^13.0.2",
+    "@polkadot/types": "^12.3.1",
+    "@polkadot/util": "^13.0.2",
+    "@polkadot/util-crypto": "^13.0.2",
+    "@polkadot/x-fetch": "^13.0.2",
+    "safe-buffer": "^5.2.1",
+    "typescript": "^5.3.3"
   }
 }
