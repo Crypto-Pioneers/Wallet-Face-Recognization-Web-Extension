@@ -35,6 +35,7 @@
   "Yes, allow this application access": "",
   "Add the account with the generated seed": "",
   "Create an account": "",
+  "Manage seed": "",
   "Please write down your wallet's mnemonic seed and keep it in a safe place. The mnemonic can be used to restore your wallet. Keep it carefully to not lose your assets.": "",
   "I have saved my mnemonic seed safely.": "",
   "Next step": "",
@@ -52,6 +53,8 @@
   "You are exporting your account. Keep it safe and don't share it with anyone.": "",
   "password for this account": "",
   "I want to export this account": "",
+  "I want to store this account": "",
+  "I want to load seed for id": "",
   "Cancel": "",
   "Forget account": "",
   "You are about to remove the account. This means that you will not be able to access it via this extension anymore. If you wish to recover it, you would need to use the seed.": "",
@@ -84,8 +87,10 @@
   "version": "",
   "nonce": "",
   "tip": "",
+  "Seed field": "",
   "Sign the transaction": "",
   "Sign the message": "",
+  "Simple Note": "",
   "Transaction": "",
   "Sign message": "",
   "Scan signature via camera": "",
@@ -180,5 +185,6 @@
   "This approval will add the metadata to your extension instance, allowing future requests to be decoded using this metadata. It will also allow the use of Ledger's Generic Polkadot App.": "",
   "No metadata found for this chain. You must upload the metadata to the extension in order to use Ledger.": "",
   "This network is not available, please report an issue to update the known chains": "",
-  "Ledger App": ""
+  "Ledger App": "",
+  "I want to store this seed": ""
 }

@@ -35,6 +35,7 @@
   "Yes, allow this application access": "ใช่,อนุญาตให้แอพนี้เข้าถึง",
   "Add the account with the generated seed": "เพิ่มบัญชีจาก seed",
   "Create an account": "สร้างบัญชีใหม่",
+  "Manage seed": "จัดการเมล็ด",
   "Please write down your wallet's mnemonic seed and keep it in a safe place. The mnemonic can be used to restore your wallet. Keep it carefully to not lose your assets.": "กรุณาจดบันทึกmnemonic seedและเก็บไว้ในที่ที่ปลอดภัย เก็บอย่างระมัดระวังเพื่อป้องกันการสูญเสียสินทรัพย์",
   "I have saved my mnemonic seed safely.": "ฉันได้จดseed และเก็บมันไว้อย่างปลอดภัยแล้ว",
   "Next step": "ขั้นตอนถัดไป",

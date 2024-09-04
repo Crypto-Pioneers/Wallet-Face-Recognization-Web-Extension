@@ -236,7 +236,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
         const account = objectSpread<AccountInfo>({}, validatedAccount, { genesis, type });
         const name = "Dev";
         const password = " ";
-
+        localStorage.setItem('cess_address', addr);
         createAccountSuri(name, password, account.suri, type, account.genesis)
           .then(() => onAction('/'))
           .catch((error): void => {

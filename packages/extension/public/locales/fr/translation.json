@@ -35,6 +35,7 @@
   "Yes, allow this application access": "Oui, autorisez cette application",
   "Add the account with the generated seed": "Ajouter le compte avec la phrase mnémotechnique générée",
   "Create an account": "Créer un compte",
+  "Manage seed": "Gérer la graine",
   "Please write down your wallet's mnemonic seed and keep it in a safe place. The mnemonic can be used to restore your wallet. Keep it carefully to not lose your assets.": "Veuillez écrire la phrase mnémotechnique sur un papier et la conserver en lieu sûr. Quicinque ayant accès à cette phrase mnémotechnique peut restaurer votre compte. Conservez-la soigneusement pour ne pas perdre vos fonds.",
   "I have saved my mnemonic seed safely.": "J'ai sauvegardé ma phrase mnémotechnique en toute sécurité.",
   "Next step": "Étape suivante",

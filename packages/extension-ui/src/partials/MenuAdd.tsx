@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { faUsb } from '@fortawesome/free-brands-svg-icons';
-import { faCodeBranch, faFileExport, faFileUpload, faKey, faPlusCircle, faQrcode } from '@fortawesome/free-solid-svg-icons';
+import { faCodeBranch, faFileExport, faFileUpload, faKey, faQrcode, faCloud } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useCallback, useContext } from 'react';
 
@@ -43,10 +43,16 @@ function MenuAdd ({ className, reference }: Props): React.ReactElement<Props> {
       className={className}
       reference={reference}
     >
-      <MenuItem className='menuItem'>
+      {/* <MenuItem className='menuItem'>
         <Link to={'/account/create'}>
           <FontAwesomeIcon icon={faPlusCircle} />
           <span>{ t('Create new account')}</span>
+        </Link>
+      </MenuItem> */}
+      <MenuItem className='menuItem'>
+        <Link to={'/seed/manage'}>
+          <FontAwesomeIcon icon={faCloud} />
+          <span>{ t('Manage seed')}</span>
         </Link>
       </MenuItem>
       <MenuDivider />

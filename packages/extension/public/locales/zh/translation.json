@@ -36,6 +36,7 @@
   "Add the account with the generated seed": "使用生成的种子添加帐户",
   "Cancel": "取消",
   "Create an account": "创建一个账户",
+  "Manage seed": "管理种子",
   "Please write down your wallet’s mnemonic seed and keep it in a safe place. The mnemonic can be used to restore your wallet. Keep it carefully to not lose your assets.": "请写下你的钱包助记词，并把它放在安全的地方。这个助记词可以用来恢复你的钱包。小心保管，以免失去你的资产。",
   "I have saved my mnemonic seed safely.": "我安全地保存了我的助记词。",
   "Next step": "下一步",
