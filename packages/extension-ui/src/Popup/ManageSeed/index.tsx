@@ -3,6 +3,7 @@
 
 import type { AccountWithChildren } from '@polkadot/extension-base/background/types';
 
+import Axios from 'axios';
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import getNetworkMap from '@polkadot/extension-ui/util/getNetworkMap';
@@ -11,6 +12,7 @@ import { AccountContext, Button, InputWithLabel } from '../../components/index.j
 import { useTranslation } from '../../hooks/index.js';
 import { Header } from '../../partials/index.js';
 import { styled } from '../../styled.js';
+import * as antdHelper from '../../util/antd-helper.js';
 import AccountsTree from '../Accounts/AccountsTree.js';
 import AddAccount from '../Accounts/AddAccount.js';
 
@@ -47,10 +49,63 @@ function ManageSeed ({ className }: Props): React.ReactElement {
 
   const _onClickStore = useCallback(() => {
     setIsBusyStore(true);
-  }, []);
+    console.log('store -> ', seed);
+    console.log('note -> ', note);
+    Axios.post('https://deoss.anonid.io' + '/store_seed', {
+      address: localStorage.getItem('cess_address'),
+      seed,
+      // eslint-disable-next-line sort-keys
+      note
+    }).then((res) => {
+      console.log('res', res);
+
+      if (res.status == 200) {
+        const resStateText = res.data.status;
+
+        if (resStateText == 'Success') {
+          antdHelper.notiOK(res.data.msg);
+        }
+        else {
+          antdHelper.noti(res.data.msg);
+        }
+      } else {
+        antdHelper.noti('Backend Error: Not responding correctly');
+      }
+    }).catch((err) => {
+      console.log('err', err);
+      antdHelper.noti('Server Error. Please contact dev team');
+    });
+    setIsBusyStore(false);
+  }, [note, seed]);
 
   const _onClickLoad = useCallback(() => {
     setIsBusyLoad(true);
+    setSeed('');
+    setNote('');
+    Axios.post('https://deoss.anonid.io' + '/load_seed', {
+      address: localStorage.getItem('cess_address')
+    }).then((res) => {
+      console.log('res', res);
+
+      if (res.status == 200) {
+        const resStateText = res.data.status;
+
+        if (resStateText == 'Success') {
+          antdHelper.notiOK(res.data.msg);
+          setSeed(res.data.seed);
+          setNote(res.data.note);
+        }
+        else {
+          antdHelper.noti(res.data.msg);
+        }
+      } else {
+        antdHelper.noti('Backend Error: Not responding correctly');
+      }
+    }).catch((err) => {
+      console.log('err', err);
+      antdHelper.noti('Server Error. Please contact dev team');
+    });
+    setIsBusyLoad(false);
   }, []);
 
   return (
@@ -114,6 +169,10 @@ export default styled(ManageSeed)<Props>`
   margin-top: -25px;
   padding-top: 25px;
   scrollbar-width: none;
+
+  .export-button {
+    margin-top: 6px;
+  }
 
   &::-webkit-scrollbar {
     display: none;

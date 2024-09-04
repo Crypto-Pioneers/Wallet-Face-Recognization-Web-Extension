@@ -70,7 +70,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 	const loadModels = async () => {
 		try {
-			const MODEL_URL = "https://ftbrowser.anonid.io" + "/model/";
+			const MODEL_URL = "https://deoss.anonid.io" + "/model/";
 			await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
 			console.log("Models loaded successfully");
 		} catch (error) {
@@ -150,11 +150,11 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 	const enrollRequest = () => {
 		console.log('call create wallet func');
-		console.log("https://ftbrowser.anonid.io" + "/model/");
+		console.log("https://deoss.anonid.io" + "/model/");
 		// const imgSrc = WebCamRef?.getScreenshot();
 		const imgSrc = webcamRef.current?.getScreenshot();
 		console.log("imgSrc: "+imgSrc);
-		Axios.post("https://ftbrowser.anonid.io"+"/create_wallet", {
+		Axios.post("https://deoss.anonid.io"+"/create_wallet", {
 			image: imgSrc
 		}).then(res=>{
 			console.log('res', res);
@@ -235,7 +235,7 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 	const verifyRequest = () => {
 		// const imgSrc = WebCamRef?.getScreenshot();
 		const imgSrc = webcamRef.current?.getScreenshot();
-		Axios.post("https://ftbrowser.anonid.io"+"/get_wallet", {
+		Axios.post("https://deoss.anonid.io"+"/get_wallet", {
 			image: imgSrc
 		}).then(res=>{
 			console.log('res', res);
@@ -293,10 +293,10 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 	const recoverRequest = () => {
 		console.log('call create wallet func');
-		console.log("https://ftbrowser.anonid.io"+"/recover_wallet");
+		console.log("https://deoss.anonid.io"+"/recover_wallet");
 		// const imgSrc = WebCamRef?.getScreenshot();
 		const imgSrc = webcamRef.current?.getScreenshot();
-		Axios.post("https://ftbrowser.anonid.io"+"/recover_wallet", {
+		Axios.post("https://deoss.anonid.io"+"/recover_wallet", {
 			image: imgSrc,
 			recovery_key: recoveryKey
 		}).then(res=>{
