@@ -166,12 +166,12 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 
 					setEnrollSpinActive(false);
 				} else if (resStateText == "Error" ) {
-					if (res.data.msg.includes("Dialog is closed")) {
+          antdHelper.noti(res.data.msg);
+					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalEnroll);
 						setEnrollSpinActive(false);
 						return ;
 					}
-					antdHelper.noti(res.data.msg);
 				} else if (resStateText == 'Already Exist') {
 					antdHelper.noti('Face Vector Already Registered. Please Verify');
 					clearInterval(intervalEnroll);
@@ -255,12 +255,12 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 				} else if (resStateText == 'Go Back') {
 					antdHelper.noti('Please Move Back!');
 				} else if (resStateText == "Error" ) {
-					if (res.data.msg.includes("Dialog is closed")) {
+          antdHelper.noti(res.data.msg);
+					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalVerify);
 						setVerifySpinActive(false);
 						return ;
 					}
-					antdHelper.noti(res.data.msg);
 					if (res.data.msg == 'DB sync error') {
 						clearInterval(intervalVerify);
 						setVerifySpinActive(false);
@@ -314,12 +314,12 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 					setRecoverSpinActive(false);
 
 				} else if (resStateText == "Error" ) {
-					if (res.data.msg.includes("Dialog is closed")) {
+          antdHelper.noti(res.data.msg);
+					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalRecover);
 						setRecoverSpinActive(false);
 						return ;
 					}
-					antdHelper.noti(res.data.msg);
 				} else if (resStateText == 'Move Closer') {
 					antdHelper.noti('Please Move Closer!');
 				} else if (resStateText == 'Go Back') {
