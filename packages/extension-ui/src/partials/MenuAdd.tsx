@@ -1,14 +1,14 @@
 // Copyright 2019-2024 @polkadot/extension-ui authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { faUsb } from '@fortawesome/free-brands-svg-icons';
-import { faCodeBranch, faFileExport, faFileUpload, faKey, faQrcode, faCloud } from '@fortawesome/free-solid-svg-icons';
+// import { faUsb } from '@fortawesome/free-brands-svg-icons';
+import { faDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useCallback, useContext } from 'react';
+import React from 'react';
 
-import { AccountContext, Link, MediaContext, Menu, MenuDivider, MenuItem } from '../components/index.js';
-import { useIsPopup, useLedger, useTranslation } from '../hooks/index.js';
-import { windowOpen } from '../messaging.js';
+import { Link, Menu, MenuItem } from '../components/index.js';
+import { useTranslation } from '../hooks/index.js';
+// import { windowOpen } from '../messaging.js';
 import { styled } from '../styled.js';
 
 interface Props {
@@ -16,27 +16,27 @@ interface Props {
   reference: React.MutableRefObject<null>;
 }
 
-const jsonPath = '/account/restore-json';
-const ledgerPath = '/account/import-ledger';
+// const jsonPath = '/account/restore-json';
+// const ledgerPath = '/account/import-ledger';
 
 function MenuAdd ({ className, reference }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
-  const { master } = useContext(AccountContext);
-  const mediaAllowed = useContext(MediaContext);
-  const { isLedgerCapable, isLedgerEnabled } = useLedger();
-  const isPopup = useIsPopup();
+  // const { master } = useContext(AccountContext);
+  // const mediaAllowed = useContext(MediaContext);
+  // const { isLedgerCapable, isLedgerEnabled } = useLedger();
+  // const isPopup = useIsPopup();
 
-  const _openJson = useCallback(
-    (): void => {
-      windowOpen(jsonPath).catch(console.error);
-    }, []
-  );
+  // const _openJson = useCallback(
+  //   (): void => {
+  //     windowOpen(jsonPath).catch(console.error);
+  //   }, []
+  // );
 
-  const _onOpenLedgerConnect = useCallback(
-    (): void => {
-      windowOpen(ledgerPath).catch(console.error);
-    }, []
-  );
+  // const _onOpenLedgerConnect = useCallback(
+  //   (): void => {
+  //     windowOpen(ledgerPath).catch(console.error);
+  //   }, []
+  // );
 
   return (
     <Menu
@@ -50,12 +50,18 @@ function MenuAdd ({ className, reference }: Props): React.ReactElement<Props> {
         </Link>
       </MenuItem> */}
       <MenuItem className='menuItem'>
-        <Link to={'/seed/manage'}>
-          <FontAwesomeIcon icon={faCloud} />
-          <span>{ t('Manage seed')}</span>
+        <Link to={'/seed/store'}>
+          <FontAwesomeIcon icon={faUpload} />
+          <span>{ t('Store seed')}</span>
         </Link>
       </MenuItem>
-      <MenuDivider />
+      <MenuItem className='menuItem'>
+        <Link to={'/seed/load'}>
+          <FontAwesomeIcon icon={faDownload} />
+          <span>{ t('Load seed')}</span>
+        </Link>
+      </MenuItem>
+      {/* <MenuDivider />
       {!!master && (
         <>
           <MenuItem className='menuItem'>
@@ -127,7 +133,7 @@ function MenuAdd ({ className, reference }: Props): React.ReactElement<Props> {
             </Link>
           )
         }
-      </MenuItem>
+      </MenuItem> */}
     </Menu>
   );
 }

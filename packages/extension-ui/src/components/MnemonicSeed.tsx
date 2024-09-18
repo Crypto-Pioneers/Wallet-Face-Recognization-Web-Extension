@@ -25,7 +25,7 @@ function MnemonicSeed ({ className, onCopy, seed }: Props): React.ReactElement<P
     <div className={className}>
       <BoxWithLabel
         className='mnemonicDisplay'
-        label={t('Generated 12-word mnemonic seed:')}
+        label={t('Loaded 12-word mnemonic seed:')}
         value={seed}
       />
       <div className='buttonsRow'>

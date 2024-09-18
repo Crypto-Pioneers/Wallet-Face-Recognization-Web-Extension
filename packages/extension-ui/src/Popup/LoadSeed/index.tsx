@@ -8,7 +8,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 
 import getNetworkMap from '@polkadot/extension-ui/util/getNetworkMap';
 
-import { AccountContext, Button, InputWithLabel } from '../../components/index.js';
+import { AccountContext, Button, InputWithLabel, MnemonicSeed } from '../../components/index.js';
 import { useToast, useTranslation } from '../../hooks/index.js';
 import { Header } from '../../partials/index.js';
 import { styled } from '../../styled.js';
@@ -19,19 +19,19 @@ interface Props {
   className?: string;
 }
 
-function ManageSeed ({ className }: Props): React.ReactElement {
+function LoadSeed ({ className }: Props): React.ReactElement {
   const { t } = useTranslation();
-  const { show } = useToast();
   const [filter, setFilter] = useState('');
   const [filteredAccount, setFilteredAccount] = useState<AccountWithChildren[]>([]);
   const [seed, setSeed] = useState('');
   const [note, setNote] = useState('');
-  const [isBusyStore, setIsBusyStore] = useState<boolean>(false);
   const [isBusyLoad, setIsBusyLoad] = useState<boolean>(false);
   const { hierarchy } = useContext(AccountContext);
   const networkMap = useMemo(() => getNetworkMap(), []);
+  const { show } = useToast();
 
   useEffect(() => {
+    setNote('');
     setFilteredAccount(
       filter
         ? hierarchy.filter((account) =>
@@ -43,40 +43,13 @@ function ManageSeed ({ className }: Props): React.ReactElement {
     );
   }, [filter, hierarchy, networkMap]);
 
+  const _onCopy = useCallback((): void => {
+    show(t('Copied'));
+  }, [show, t]);
+
   const _onFilter = useCallback((filter: string) => {
     setFilter(filter.toLowerCase());
   }, []);
-
-  const _onClickStore = useCallback(() => {
-    setIsBusyStore(true);
-    console.log('store -> ', seed);
-    console.log('note -> ', note);
-    Axios.post('https://deoss.anonid.io' + '/store_seed', {
-      address: localStorage.getItem('cess_address'),
-      seed,
-      // eslint-disable-next-line sort-keys
-      note
-    }).then((res) => {
-      console.log('res', res);
-
-      if (res.status == 200) {
-        const resStateText = res.data.status;
-
-        if (resStateText == 'Success') {
-          show(res.data.msg);
-        }
-        else {
-          show(res.data.msg);
-        }
-      } else {
-        show('Backend Error: Not responding correctly');
-      }
-    }).catch((err) => {
-      console.log('err', err);
-      show('Server Error. Please contact dev team');
-    });
-    setIsBusyStore(false);
-  }, [note, seed]);
 
   const _onClickLoad = useCallback(() => {
     setIsBusyLoad(true);
@@ -130,23 +103,14 @@ function ManageSeed ({ className }: Props): React.ReactElement {
                 />
               ))}
               <InputWithLabel
-                label={t('Seed field')}
+                label={t('UniqueID field')}
                 onChange={setSeed}
                 value={seed}
               />
-              <InputWithLabel
-                label={t('Simple Note')}
-                onChange={setNote}
-                value={note}
+              <MnemonicSeed
+                onCopy={_onCopy}
+                seed={note}
               />
-              <Button
-                className='export-button'
-                data-export-button
-                isBusy={isBusyStore}
-                onClick={_onClickStore}
-              >
-                {t('I want to store this seed')}
-              </Button>
               <Button
                 className='export-button'
                 data-export-button
@@ -163,7 +127,7 @@ function ManageSeed ({ className }: Props): React.ReactElement {
   );
 }
 
-export default styled(ManageSeed)<Props>`
+export default styled(LoadSeed)<Props>`
   height: calc(100vh - 2px);
   overflow-y: scroll;
   margin-top: -25px;

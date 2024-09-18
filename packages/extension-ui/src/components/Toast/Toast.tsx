@@ -22,15 +22,20 @@ function Toast ({ className, content }: Props): React.ReactElement<Props> {
 export default styled(Toast)<Props>`
   position: fixed;
   display: ${({ visible }): string => visible ? 'block' : 'none'};
-  height: 40px;
+  height: auto;  // Allow height to adjust based on content
+  max-width: 300px;  // Maximum width of the toast
+  padding: 0px 20px;  // Padding around the text for better formatting
   text-align: center;
   vertical-align: middle;
-  line-height: 7px;
+  // line-height: 7px;  // Appropriate line height for potential multi-line text
   top: 460px;
-  left: calc(50% - 50px);
+  left: 50%;  // Set left to 50% of the viewport width
+  transform: translateX(-50%);  // Shift it left by 50% of its own width
   && {
     margin: auto;
     border-radius: 25px;
     background: var(--highlightedAreaBackground);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);  // Optional: Adds shadow for better visibility
+    overflow: hidden;  // Ensures text stays within the rounded corners
   }
 `;

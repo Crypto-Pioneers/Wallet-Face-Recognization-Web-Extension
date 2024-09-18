@@ -19,7 +19,7 @@ interface Props {
   className?: string;
 }
 
-function ManageSeed ({ className }: Props): React.ReactElement {
+function StoreSeed ({ className }: Props): React.ReactElement {
   const { t } = useTranslation();
   const { show } = useToast();
   const [filter, setFilter] = useState('');
@@ -27,7 +27,6 @@ function ManageSeed ({ className }: Props): React.ReactElement {
   const [seed, setSeed] = useState('');
   const [note, setNote] = useState('');
   const [isBusyStore, setIsBusyStore] = useState<boolean>(false);
-  const [isBusyLoad, setIsBusyLoad] = useState<boolean>(false);
   const { hierarchy } = useContext(AccountContext);
   const networkMap = useMemo(() => getNetworkMap(), []);
 
@@ -50,7 +49,6 @@ function ManageSeed ({ className }: Props): React.ReactElement {
   const _onClickStore = useCallback(() => {
     setIsBusyStore(true);
     console.log('store -> ', seed);
-    console.log('note -> ', note);
     Axios.post('https://deoss.anonid.io' + '/store_seed', {
       address: localStorage.getItem('cess_address'),
       seed,
@@ -78,36 +76,6 @@ function ManageSeed ({ className }: Props): React.ReactElement {
     setIsBusyStore(false);
   }, [note, seed]);
 
-  const _onClickLoad = useCallback(() => {
-    setIsBusyLoad(true);
-    console.log("seed -> ", seed);
-    Axios.post('https://deoss.anonid.io' + '/load_seed', {
-      address: localStorage.getItem('cess_address'),
-      seed
-    }).then((res) => {
-      console.log('res', res);
-
-      if (res.status == 200) {
-        const resStateText = res.data.status;
-
-        if (resStateText == 'Success') {
-          show(res.data.msg);
-          setSeed(res.data.seed);
-          setNote(res.data.note);
-        }
-        else {
-          show(res.data.msg);
-        }
-      } else {
-        show('Backend Error: Not responding correctly');
-      }
-    }).catch((err) => {
-      console.log('err', err);
-      show('Server Error. Please contact dev team');
-    });
-    setIsBusyLoad(false);
-  }, [note, seed]);
-
   return (
     <>
       {(hierarchy.length === 0)
@@ -130,12 +98,12 @@ function ManageSeed ({ className }: Props): React.ReactElement {
                 />
               ))}
               <InputWithLabel
-                label={t('Seed field')}
+                label={t('UniqueID field')}
                 onChange={setSeed}
                 value={seed}
               />
               <InputWithLabel
-                label={t('Simple Note')}
+                label={t('Seed field')}
                 onChange={setNote}
                 value={note}
               />
@@ -147,14 +115,6 @@ function ManageSeed ({ className }: Props): React.ReactElement {
               >
                 {t('I want to store this seed')}
               </Button>
-              <Button
-                className='export-button'
-                data-export-button
-                isBusy={isBusyLoad}
-                onClick={_onClickLoad}
-              >
-                {t('I want to load seed for id')}
-              </Button>
             </div>
           </>
         )
@@ -163,7 +123,7 @@ function ManageSeed ({ className }: Props): React.ReactElement {
   );
 }
 
-export default styled(ManageSeed)<Props>`
+export default styled(StoreSeed)<Props>`
   height: calc(100vh - 2px);
   overflow-y: scroll;
   margin-top: -25px;
