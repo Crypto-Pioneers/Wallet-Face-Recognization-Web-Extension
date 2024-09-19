@@ -12,7 +12,7 @@ import { packageInfo } from './packageInfo.js';
 
 function inject () {
   injectExtension(enable, {
-    name: 'anonid-wallet',
+    name: 'anonid',
     version: packageInfo.version
   });
 }

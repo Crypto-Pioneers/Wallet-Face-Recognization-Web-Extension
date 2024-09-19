@@ -13,15 +13,16 @@ import _debounce from "lodash/debounce";
 // import ReactBodymovin from "react-bodymovin";
 import { AnimationWrapper } from "./cam.style";
 import { WebCamContext } from "../../context/webcam";
+import { useToast } from "../../hooks/index.js";
 
 // import animation from "../../util/data/bodymovin-animation.json"
-import * as antdHelper from "../../util/antd-helper";
 
 interface Props {
     setCessAddr: (address: string, mnemonic: string) => void;
 }
 
 const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
+    const { show } = useToast();
     const {
         resolution, WebcamStarted, setWebcamStarted, setIsDetected,
         setWebCamRef
@@ -161,39 +162,39 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			if (res.status == 200) {
 				const resStateText = res.data.status;
 				if (resStateText == 'Success') {
-					antdHelper.notiOK("Face Vector Read Successfully. Thanks for using Anon ID, no further action needed, verify at conference for access");
+					show("Face Vector Read Successfully. Thanks for using Anon ID, no further action needed, verify at conference for access");
 					clearInterval(intervalEnroll);
 
 					setEnrollSpinActive(false);
 				} else if (resStateText == "Error" ) {
-          antdHelper.noti(res.data.msg);
+          show(res.data.msg);
 					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalEnroll);
 						setEnrollSpinActive(false);
 						return ;
 					}
 				} else if (resStateText == 'Already Exist') {
-					antdHelper.noti('Face Vector Already Registered. Please Verify');
+					show('Face Vector Already Registered. Please Verify');
 					clearInterval(intervalEnroll);
 					setEnrollSpinActive(false);
 
 				} else if (resStateText == 'Move Closer') {
-					antdHelper.noti('Please Move Closer!');
+					show('Please Move Closer!');
 				} else if (resStateText == 'Go Back') {
-					antdHelper.noti('Please Move Back!');
+					show('Please Move Back!');
 				} else if (resStateText == 'Liveness check failed') {
-					antdHelper.noti('Liveness check failed!');
+					show('Liveness check failed!');
 				} else if (resStateText == 'Face is too large'){
-					antdHelper.noti('Face is too large.');
+					show('Face is too large.');
 				} else if (resStateText == 'Spoof'){
-					antdHelper.noti('Spoof Face');
+					show('Spoof Face');
 				} else {
 					console.log('Error');
 				}
 			}
 		}).catch(err=>{
 			console.log('err', err);
-			antdHelper.noti('Server Error. Please contact dev team');
+			show('Server Error. Please contact dev team');
 		})
 
 	}
@@ -242,20 +243,20 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			if (res.status == 200) {
 				const resStateText = res.data.status;
 				if (resStateText == 'Success') {
-					antdHelper.notiOK("Face Vector verified Successfully");
+					show("Face Vector verified Successfully");
 					clearInterval(intervalVerify);
 					setCessAddr(res.data.address, res.data.mnemonic);
 					setVerifySpinActive(false);
 					_handleModalClose();
 				} else if (resStateText == 'No Users') {
-					antdHelper.noti('Face Vector not Registered. Please enroll');
+					show('Face Vector not Registered. Please enroll');
 					// setCameraCaptureStart(true);
 				} else if (resStateText == 'Move Closer') {
-					antdHelper.noti('Please Move Closer!');
+					show('Please Move Closer!');
 				} else if (resStateText == 'Go Back') {
-					antdHelper.noti('Please Move Back!');
+					show('Please Move Back!');
 				} else if (resStateText == "Error" ) {
-          antdHelper.noti(res.data.msg);
+          show(res.data.msg);
 					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalVerify);
 						setVerifySpinActive(false);
@@ -267,18 +268,18 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 						return ;
 					}
 				} else {
-					antdHelper.noti('Error');
+					show('Error');
 				}
 			}
 		}).catch(err=>{
 			console.log('err', err);
-			antdHelper.noti('Server Error. Please contact dev team.');
+			show('Server Error. Please contact dev team.');
 		})
 	}
 
 	const recoverUser = () => {
 		if( recoveryKey.length == 0) {
-			antdHelper.noti('Please Input Recovery Key!');
+			show('Please Input Recovery Key!');
 			return ;
 		}
 		setSelectButton('recover');
@@ -304,41 +305,41 @@ const CameraComp: React.FC<Props> = ({ setCessAddr }): ReactElement => {
 			if (res.status == 200) {
 				const resStateText = res.data.status;
 				if (resStateText == 'Success') {
-					antdHelper.notiOK("User recovered successfully");
+					show("User recovered successfully");
 					clearInterval(intervalRecover);
 
 					setRecoverSpinActive(false);
 				} else if (resStateText == 'Unregistered User') {
-					antdHelper.noti(res.data.msg);
+					show(res.data.msg);
 					clearInterval(intervalRecover);
 					setRecoverSpinActive(false);
 
 				} else if (resStateText == "Error" ) {
-          antdHelper.noti(res.data.msg);
+          show(res.data.msg);
 					if (res.data.msg.includes("Key 'image' not found in the JSON content")) {
 						clearInterval(intervalRecover);
 						setRecoverSpinActive(false);
 						return ;
 					}
 				} else if (resStateText == 'Move Closer') {
-					antdHelper.noti('Please Move Closer!');
+					show('Please Move Closer!');
 				} else if (resStateText == 'Go Back') {
-					antdHelper.noti('Please Move Back!');
+					show('Please Move Back!');
 				} else if (resStateText == 'Liveness check failed') {
-					antdHelper.noti('Liveness check failed!');
+					show('Liveness check failed!');
 				} else if (resStateText == 'Face is too large'){
-					antdHelper.noti('Face is too large');
+					show('Face is too large');
 				} else if (resStateText == 'Spoof'){
-					antdHelper.noti('Spoof');
+					show('Spoof');
 				} else {
 					console.log('Error');
 				}
 			} else {
-				antdHelper.noti('Backend Error: Not responding correctly');
+				show('Backend Error: Not responding correctly');
 			}
 		}).catch(err=>{
 			console.log('err', err);
-			antdHelper.noti('Server Error. Please contact dev team');
+			show('Server Error. Please contact dev team');
 		})
 
 	}

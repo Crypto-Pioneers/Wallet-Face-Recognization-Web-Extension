@@ -16,13 +16,12 @@ import { objectSpread } from '@polkadot/util';
 import { createAccountSuri } from '../../messaging.js';
 import { ActionContext } from '../../components/index.js';
 import type { AccountInfo } from '../../Popup/ImportSeed/index.js';
-import { useTranslation } from '../../hooks/index.js';
+import { useToast, useTranslation } from '../../hooks/index.js';
 import { DEFAULT_TYPE } from '../../util/defaultType.js';
 
 import CameraComp from "../camera";
 import Header from "../header";
-import * as formatter from "../../util/formatter";
-import * as antdHelper from "../../util/antd-helper";
+import * as formatter from "../../util/formatter"
 import store from "../../util/store";
 // import animation from '@src/utils/data/bodymovin-animation.json';
 import webconfig from '../../webconfig';
@@ -110,6 +109,7 @@ let historyTotalPage = 0;
 
 function Home({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
+  const { show } = useToast();
   const onAction = useContext(ActionContext);
 	const [loading, setLoading] = useState<string | null>(null);
 	const [current, setCurrent] = useState<string>("login");
@@ -210,7 +210,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 			// createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
 			return { api, keyring };
 		} catch (e) {
-			antdHelper.noti("has error");
+			show("has error");
 			console.log(e);
       return null;
 		}
@@ -245,7 +245,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
           });
         })
 		.catch(() => {
-			antdHelper.noti(
+			show(
 				t('Invalid mnemonic seed')
 			);
 			return ;
@@ -304,26 +304,26 @@ function Home({ className }: Props): React.ReactElement<Props> {
 
 	const onCopy = (txt: string):void => {
 		copy(txt);
-		antdHelper.notiOK("Copied");
+		show("Copied");
 	};
 
 	const onLogout = () => {
 		// if (unsubBalance) {
 		// 	unsubBalance();
 		// }
-		antdHelper.notiOK("Logout success.");
+		show("Logout success.");
 		setAccount({address: "", mnemonic: ""});
 		setCurrent("login");
 		store.remove("addr");
 	};
 
 	// const subState = (d: any) => {
-	// 	antdHelper.noti(d);
+	// 	show(d);
 	// 	if (typeof d == "string") {
-	// 		antdHelper.noti(d);
+	// 		show(d);
 	// 	}
 	// 	else {
-	// 		antdHelper.noti(d.status.toString());
+	// 		show(d.status.toString());
 	// 	}
 	// };
 
@@ -346,7 +346,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 				msg = "Please input the correct amount and receiving address.";
 			}
 			console.log(msg);
-			antdHelper.notiError(msg);
+			show(msg);
 		}
 	};
 
@@ -364,7 +364,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 			// }
 			// submitTx(extrinsic);
 		} catch (e) {
-			antdHelper.notiError((e as Error).message);
+			show((e as Error).message);
 		}
 	};
 
@@ -390,7 +390,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 			// 	submitTx(extrinsic);
 			// }
 		} catch (e) {
-			antdHelper.notiError((e as Error).message);
+			show((e as Error).message);
 		}
 	};
 
@@ -407,7 +407,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 	const loadHistoryList = async (addr: string) => {
 		const address = addr || account.address;
 		if (!address) {
-			antdHelper.noti("address is null ,jump to load history.");
+			show("address is null ,jump to load history.");
 			return;
 		}
 		const url = `/transfer/query?Acc=${address}&pageindex=${pageIndex}&pagesize=${webconfig.historyPageSize}`;
@@ -415,12 +415,12 @@ function Home({ className }: Props): React.ReactElement<Props> {
 
 		if (ret.msg != "ok") {
 			return ;
-			// return antdHelper.notiError(ret.msg || "Request Error");
+			// return show(ret.msg || "Request Error");
 		}
 		if( typeof ret.data != "object" ) return ;
 		const data = ret.data as ResponseData;
 		if (!data.content) {
-			return antdHelper.notiError("API error");
+			return show("API error");
 		}
 
 		const list = data.content.map((t: Response) => {
@@ -452,35 +452,35 @@ function Home({ className }: Props): React.ReactElement<Props> {
 
 	const formatParams = (obj: FormatParam): {address: string, amount: bigint} | null => {
 		if (!obj.amount) {
-			antdHelper.notiError("Amount is required.");
+			show("Amount is required.");
 			return null;
 		}
 		if (obj.amount.length > 29) {
-			antdHelper.notiError("The amount character length exceeds the limit.");
+			show("The amount character length exceeds the limit.");
 			return null;
 		}
 		if (isNaN(parseFloat(obj.amount))) {
-			antdHelper.notiError("The Amount allow only numbers input.");
+			show("The Amount allow only numbers input.");
 			return null;
 		}
 		const amount = parseFloat(obj.amount);
 		if (amount < 0) {
-			antdHelper.notiError("Amount error.");
+			show("Amount error.");
 			return null;
 		}
 		if (amount > available) {
-			antdHelper.noti('amount: ' + amount + ' available: ' + available);
-			antdHelper.notiError("Insufficient Balance");
+			show('amount: ' + amount + ' available: ' + available);
+			show("Insufficient Balance");
 			return null;
 		}
 		const ret_amount = BigInt(amount * 1e18);
 
 		if (!obj.address) {
-			antdHelper.notiError("Account address is required.");
+			show("Account address is required.");
 			return null;
 		}
 		if (obj.address.length < 40 || obj.address.length > 49) {
-			antdHelper.notiError("Please input the correct receiving address.");
+			show("Please input the correct receiving address.");
 			return null;
 		}
 		return { address: obj.address, amount: ret_amount };
@@ -526,7 +526,7 @@ function Home({ className }: Props): React.ReactElement<Props> {
 	// 				backToDashboard();
 	// 			}
 	// 		} else {
-	// 			antdHelper.notiError(ret.msg + ret.data);
+	// 			show(ret.msg + ret.data);
 	// 		}
 	// 	} catch (e) {
 	// 		let msg = (e as Error).message || e as Error;
@@ -534,9 +534,9 @@ function Home({ className }: Props): React.ReactElement<Props> {
 	// 			msg = JSON.stringify(msg);
 	// 		}
 	// 		if (msg.includes("balance too low")) {
-	// 			antdHelper.notiError("Insufficient Balance");
+	// 			show("Insufficient Balance");
 	// 		} else {
-	// 			antdHelper.notiError(msg);
+	// 			show(msg);
 	// 		}
 	// 	} finally {
 	// 		setLoading(null);
@@ -557,14 +557,14 @@ function Home({ className }: Props): React.ReactElement<Props> {
 
 	// const onReConnect = async (e: any) => {
 	// 	let timeout = setTimeout(function () {
-	// 		antdHelper.notiError("Connect timeout");
+	// 		show("Connect timeout");
 	// 	}, 5000);
 	// 	let { api } = await init(customRPC);
 	// 	clearTimeout(timeout);
 	// 	if (api) {
-	// 		antdHelper.notiOK("Connected");
+	// 		show("Connected");
 	// 	} else {
-	// 		antdHelper.notiError("Connect failed");
+	// 		show("Connect failed");
 	// 	}
 	// };
 
