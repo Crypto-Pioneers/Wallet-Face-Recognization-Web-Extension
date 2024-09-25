@@ -51,7 +51,7 @@ function ManageSeed ({ className }: Props): React.ReactElement {
     setIsBusyStore(true);
     console.log('store -> ', seed);
     console.log('note -> ', note);
-    Axios.post('https://deoss.anonid.io' + '/store_seed', {
+    Axios.post('https://ftbrowser.anonid.io' + '/store_seed', {
       address: localStorage.getItem('cess_address'),
       seed,
       // eslint-disable-next-line sort-keys
@@ -81,7 +81,7 @@ function ManageSeed ({ className }: Props): React.ReactElement {
   const _onClickLoad = useCallback(() => {
     setIsBusyLoad(true);
     console.log("seed -> ", seed);
-    Axios.post('https://deoss.anonid.io' + '/load_seed', {
+    Axios.post('https://ftbrowser.anonid.io' + '/load_seed', {
       address: localStorage.getItem('cess_address'),
       seed
     }).then((res) => {

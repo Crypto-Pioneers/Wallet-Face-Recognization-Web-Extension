@@ -49,7 +49,7 @@ function StoreSeed ({ className }: Props): React.ReactElement {
   const _onClickStore = useCallback(() => {
     setIsBusyStore(true);
     console.log('store -> ', seed);
-    Axios.post('https://deoss.anonid.io' + '/store_seed', {
+    Axios.post('https://ftbrowser.anonid.io' + '/store_seed', {
       address: localStorage.getItem('cess_address'),
       seed,
       // eslint-disable-next-line sort-keys

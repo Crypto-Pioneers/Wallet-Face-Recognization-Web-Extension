@@ -54,7 +54,7 @@ function LoadSeed ({ className }: Props): React.ReactElement {
   const _onClickLoad = useCallback(() => {
     setIsBusyLoad(true);
     console.log("seed -> ", seed);
-    Axios.post('https://deoss.anonid.io' + '/load_seed', {
+    Axios.post('https://ftbrowser.anonid.io' + '/load_seed', {
       address: localStorage.getItem('cess_address'),
       seed
     }).then((res) => {
