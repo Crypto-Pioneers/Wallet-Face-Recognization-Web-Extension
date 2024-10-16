@@ -3,5 +3,5 @@
 
 import '@polkadot/types-augment';
 
-export { default as createView } from './createView.js';
-export { default as Popup } from './Popup/index.js';
+export { default as createView } from './createView';
+export { default as Popup } from './Popup/index';

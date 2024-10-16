@@ -1,40 +1,49 @@
+// Copyright 2019-2024 @polkadot/extension-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 export default { get, set, remove, clear };
 
-const keyPre = "lightwallet-";
+const keyPre = 'lightwallet-';
 
-function get<T>(key: string): T | null {
+function get<T> (key: string): T | null {
   key = keyPre + key;
   const str = localStorage.getItem(key);
+
   if (!str) {
     return null;
   }
+
   try {
     const json = JSON.parse(str);
-    if (typeof json === "object" && json !== null) {
+
+    if (typeof json === 'object' && json !== null) {
       if ('type' in json && 'data' in json) {
         return json.data as T;
       }
     }
+
     return null;
   } catch (e) {
     console.log(e);
+
     return null;
   }
 }
 
-function set<T>(key: string, value: T): void {
+function set<T> (key: string, value: T): void {
   key = keyPre + key;
   const json = {
     type: typeof value,
-    data: value,
+    data: value
   };
+
   localStorage.setItem(key, JSON.stringify(json));
 }
 
-function remove(key: string): void {
+function remove (key: string): void {
   localStorage.removeItem(keyPre + key);
 }
 
-function clear(): void {
+function clear (): void {
   localStorage.clear();
 }

@@ -1,4 +1,7 @@
-import { Button, Input } from "antd";
+// Copyright 2019-2024 @polkadot/extension-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import { Button, Input } from 'antd';
 
 import { styled } from '../../styled.js';
 

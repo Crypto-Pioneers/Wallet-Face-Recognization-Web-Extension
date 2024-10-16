@@ -1,41 +1,41 @@
+// Copyright 2019-2024 @polkadot/extension-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
 
-import React from 'react';
-
-import { styled } from '../../styled.js';
-
-import { useState, useEffect, useContext } from "react";
-import { Spin, Tooltip } from "antd";
-import copy from "copy-to-clipboard";
-import moment from "moment";
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { Keyring } from '@polkadot/keyring';
-import { typesBundle } from '@polkadot/apps-config';
-import QrSvg from "@wojtekmaj/react-qr-svg";
-import { validateSeed } from '@polkadot/extension-ui/messaging';
-import { objectSpread } from '@polkadot/util';
-import { createAccountSuri } from '../../messaging.js';
-import { ActionContext } from '../../components/index.js';
 import type { AccountInfo } from '../../Popup/ImportSeed/index.js';
-import { useToast, useTranslation } from '../../hooks/index.js';
-import { DEFAULT_TYPE } from '../../util/defaultType.js';
 
-import CameraComp from "../camera";
-import Header from "../header";
-import * as formatter from "../../util/formatter"
-import store from "../../util/store";
-// import animation from '@src/utils/data/bodymovin-animation.json';
-import webconfig from '../../webconfig';
-import request from '../../util/request';
+import QrSvg from '@wojtekmaj/react-qr-svg';
+import { Spin, Tooltip } from 'antd';
+import copy from 'copy-to-clipboard';
+import moment from 'moment';
+import React, { useContext, useEffect, useState } from 'react';
+
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { typesBundle } from '@polkadot/apps-config';
+import { createAccountSuri, validateSeed } from '@polkadot/extension-ui/messaging';
+import { Keyring } from '@polkadot/keyring';
+import { objectSpread } from '@polkadot/util';
+
+import backPng from '../../assets/img/back.svg';
+import copySvg from '../../assets/img/copy.svg';
+import copyBlackPng from '../../assets/img/copy-black.svg';
 import dashboardSvg from '../../assets/img/dashboard-bg.svg';
 import exitSvg from '../../assets/img/exit.png';
-import copySvg from '../../assets/img/copy.svg';
-import txPng from  '../../assets/img/tx.png';
-import sendPng from '../../assets/img/send.png';
-import receivePng from '../../assets/img/receive.png';
-import stakingPng from '../../assets/img/staking.png';
 import nominatePng from '../../assets/img/nominate.png';
-import backPng from '../../assets/img/back.svg';
-import copyBlackPng from '../../assets/img/copy-black.svg';
+import receivePng from '../../assets/img/receive.png';
+import sendPng from '../../assets/img/send.png';
+import stakingPng from '../../assets/img/staking.png';
+import txPng from '../../assets/img/tx.png';
+import { ActionContext } from '../../components/index.js';
+import { useToast, useTranslation } from '../../hooks/index.js';
+import { styled } from '../../styled.js';
+import { DEFAULT_TYPE } from '../../util/defaultType.js';
+import * as formatter from '../../util/formatter';
+import request from '../../util/request';
+import store from '../../util/store';
+// import animation from '@src/utils/data/bodymovin-animation.json';
+import webconfig from '../../webconfig';
+import CameraComp from '../camera';
+import Header from '../header';
 
 // import type { SubmittableExtrinsic } from "@polkadot/api/types";
 
@@ -44,13 +44,13 @@ interface Props {
 }
 
 interface SDKConfig {
-	nodeURL: string | string[];
-	keyringOption: {
-		type: 'ed25519' | 'sr25519' | 'ecdsa';
-		ss58Format: number;
-	};
-	gatewayURL?: string;
-	gatewayAddr?: string;
+  nodeURL: string | string[];
+  keyringOption: {
+    type: 'ed25519' | 'sr25519' | 'ecdsa';
+    ss58Format: number;
+  };
+  gatewayURL?: string;
+  gatewayAddr?: string;
 }
 
 interface Account {
@@ -59,8 +59,8 @@ interface Account {
 }
 
 interface FormatParam {
-	amount: string,
-	address: string
+  amount: string,
+  address: string
 }
 
 interface TransactionHistory {
@@ -75,724 +75,833 @@ interface TransactionHistory {
 }
 
 interface Response {
-	hash: string,
-	amount: string,
-	from: string,
-	to: string,
-	timestamp: number
+  hash: string,
+  amount: string,
+  from: string,
+  to: string,
+  timestamp: number
 }
 
 interface ResponseData {
-	content: Response[],
-	count: number
+  content: Response[],
+  count: number
 }
 // let unsubBalance;
 // let sdk = null;
 interface InputValue {
-	staking: {
-		amount: string;
-		address: string;
-	};
-	send: {
-		amount: string;
-		address: string;
-	};
-	nominate: {
-		amount: string;
-		address: string;
-	};
+  staking: {
+    amount: string;
+    address: string;
+  };
+  send: {
+    amount: string;
+    address: string;
+  };
+  nominate: {
+    amount: string;
+    address: string;
+  };
 }
 
 let pageIndex = 1;
 let historyCount = 0;
 let historyTotalPage = 0;
 
-function Home({ className }: Props): React.ReactElement<Props> {
+function Home ({ className }: Props): React.ReactElement<Props> {
   const { t } = useTranslation();
   const { show } = useToast();
   const onAction = useContext(ActionContext);
-	const [loading, setLoading] = useState<string | null>(null);
-	const [current, setCurrent] = useState<string>("login");
-	const [accounts, setAccounts] = useState<Account[]>([]);
-	const [account, setAccount] = useState<Account>({address: "", mnemonic: ""});
-	const [balance, setBalance] = useState<number>(0);
-	const [boxTitle, setBoxTitle] = useState<string>("");
-	const [available, setAvailable] = useState<number>(0);
-	const [staking, setStaking] = useState<number>(0);
-	const [nominate, setNominate] = useState<number>(0);
-	const [historys, setHistorys] = useState<TransactionHistory[]>([]);
-	const [customRPC, setCustomRPC] = useState<string>("");
-	const [inputValue, setInputValue] = useState<InputValue>({
-		staking: { amount: "0", address: "" },
-		send: { amount: "0", address: "" },
-		nominate: { amount: "0", address: "" }
-	});
+  const [loading, setLoading] = useState<string | null>(null);
+  const [current, setCurrent] = useState<string>('login');
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [account, setAccount] = useState<Account>({ address: '', mnemonic: '' });
+  const [balance, setBalance] = useState<number>(0);
+  const [boxTitle, setBoxTitle] = useState<string>('');
+  const [available, setAvailable] = useState<number>(0);
+  const [staking, setStaking] = useState<number>(0);
+  const [nominate, setNominate] = useState<number>(0);
+  const [historys, setHistorys] = useState<TransactionHistory[]>([]);
+  const [customRPC, setCustomRPC] = useState<string>('');
+  const [inputValue, setInputValue] = useState<InputValue>({
+    staking: { amount: '0', address: '' },
+    send: { amount: '0', address: '' },
+    nominate: { amount: '0', address: '' }
+  });
 
-	let historyTimeout: NodeJS.Timeout | undefined = undefined;
+  let historyTimeout: NodeJS.Timeout | undefined;
 
-	const InitAPI = async (config: SDKConfig) => {
-		try {
-			// Use the first URL if `nodeURL` is an array
-			const url = Array.isArray(config.nodeURL) ? config.nodeURL[0] : config.nodeURL;
+  const InitAPI = async (config: SDKConfig) => {
+    try {
+      // Use the first URL if `nodeURL` is an array
+      const url = Array.isArray(config.nodeURL) ? config.nodeURL[0] : config.nodeURL;
 
-			// Create a WebSocket provider
-			const provider = new WsProvider(url);
+      // Create a WebSocket provider
+      const provider = new WsProvider(url);
 
-			// Create the API instance
-			const api = await ApiPromise.create({
-				provider,
-				typesBundle // Use custom types if necessary, you may omit this if not needed
-			});
+      // Create the API instance
+      const api = await ApiPromise.create({
+        provider,
+        typesBundle // Use custom types if necessary, you may omit this if not needed
+      });
 
-			// Create a keyring instance
-			const keyring = new Keyring({
-				type: config.keyringOption.type,
-				ss58Format: config.keyringOption.ss58Format
-			});
-			console.log("API TEST")
-			console.log(api.tx);
-			// Log to confirm setup is complete
-			console.log(`API connected to ${url}, keyring set for type ${config.keyringOption.type}`);
+      // Create a keyring instance
+      const keyring = new Keyring({
+        type: config.keyringOption.type,
+        ss58Format: config.keyringOption.ss58Format
+      });
 
-			return { api, keyring };
-		} catch (error) {
-			console.error(`Failed to initialize API or keyring: ${error}`);
-			throw error; // Rethrow the error after logging it
-		}
-	}
+      console.log('API TEST');
+      console.log(api.tx);
+      // Log to confirm setup is complete
+      console.log(`API connected to ${url}, keyring set for type ${config.keyringOption.type}`);
 
-	useEffect(() => {
-		const url = store.get<string>("custom-node");
+      return { api, keyring };
+    } catch (error) {
+      console.error(`Failed to initialize API or keyring: ${error}`);
+      throw error; // Rethrow the error after logging it
+    }
+  };
+
+  useEffect(() => {
+    const url = store.get<string>('custom-node');
+
     setCurrent('login');
     setLoading(null);
 
-		if (url) {
-			setCustomRPC(url);
-		}
-		init(url);
-		autoLogin();
-		historyTimeout = setInterval(function () {
-			const addr = store.get<string>("addr");
-			if (addr && account && account.address) {
-				loadHistoryList(addr);
-			}
-		}, 5000);
+    if (url) {
+      setCustomRPC(url);
+    }
 
-		return () => {
-			clearInterval(historyTimeout);
-			// if (unsubBalance) {
-			// 	unsubBalance();
-			// }
-		};
-	}, []);
+    init(url);
+    autoLogin();
+    historyTimeout = setInterval(function () {
+      const addr = store.get<string>('addr');
 
-	const init = async (url: string | null) => {
-		try {
-			console.log("init step 1/3");
-			const config = JSON.parse(JSON.stringify(webconfig.sdkConfig));
-			if (url && url != "wss://testnet-rpc1.cess.cloud/ws/") {
-				config.nodeURL = url;
-			}
-			console.log("init step 2/3");
-			const { api, keyring } = await InitAPI(config);
-			if (api) {
-				// window.api = api;
-				// window.keyring = keyring;
+      if (addr && account && account.address) {
+        loadHistoryList(addr);
+      }
+    }, 5000);
 
-				// console.log(window.api)
-				// console.log(window.keyring)
-				if (customRPC && url && url != "wss://testnet-rpc1.cess.cloud/ws/") {
-					store.set<string>("custom-node", url);
-				}
-			}
-			console.log(config.nodeURL);
-			console.log("init step 3/3");
-			// createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
-			return { api, keyring };
-		} catch (e) {
-			show("has error");
-			console.log(e);
+    return () => {
+      clearInterval(historyTimeout);
+      // if (unsubBalance) {
+      // 	unsubBalance();
+      // }
+    };
+  }, []);
+
+  const init = async (url: string | null) => {
+    try {
+      console.log('init step 1/3');
+      const config = JSON.parse(JSON.stringify(webconfig.sdkConfig));
+
+      if (url && url != 'wss://testnet-rpc1.cess.cloud/ws/') {
+        config.nodeURL = url;
+      }
+
+      console.log('init step 2/3');
+      const { api, keyring } = await InitAPI(config);
+
+      if (api) {
+        // window.api = api;
+        // window.keyring = keyring;
+
+        // console.log(window.api)
+        // console.log(window.keyring)
+        if (customRPC && url && url != 'wss://testnet-rpc1.cess.cloud/ws/') {
+          store.set<string>('custom-node', url);
+        }
+      }
+
+      console.log(config.nodeURL);
+      console.log('init step 3/3');
+
+      // createWalletTestFromFace('cXjc4Lb8bhC9c7R9o4zowPtw5GTwyzxbGk32uRzrbDnyJYg5E', 'february duck borrow there dynamic original screen clip harsh drive bird tunnel');
+      return { api, keyring };
+    } catch (e) {
+      show('has error');
+      console.log(e);
+
       return null;
-		}
-	};
+    }
+  };
 
-	const autoLogin = async () => {
-		const addr = store.get<string>("addr");
-		const mnemonic = store.get<string>("mnemonic");
-		if (!addr || !mnemonic) {
-			return;
-		}
-		setCurrent("dashboard");
-		setAccount({ address: addr, mnemonic: mnemonic });
-		loadHistoryList(addr);
-	};
+  const autoLogin = async () => {
+    const addr = store.get<string>('addr');
+    const mnemonic = store.get<string>('mnemonic');
 
-	const createWalletTestFromFace = (addr: string, mnemonic: string) => {
+    if (!addr || !mnemonic) {
+      return;
+    }
+
+    setCurrent('dashboard');
+    setAccount({ address: addr, mnemonic });
+    loadHistoryList(addr);
+  };
+
+  const createWalletTestFromFace = (addr: string, mnemonic: string) => {
     const suri = `${mnemonic || ''}`;
     const genesis = '';
-	const type = DEFAULT_TYPE;
+    const type = DEFAULT_TYPE;
+
     validateSeed(suri, type)
       .then((validatedAccount) => {
         const account = objectSpread<AccountInfo>({}, validatedAccount, { genesis, type });
-        const name = "Dev";
-        const password = " ";
+        const name = 'Dev';
+        const password = ' ';
+
         localStorage.setItem('cess_address', addr);
         createAccountSuri(name, password, account.suri, type, account.genesis)
           .then(() => onAction('/'))
           .catch((error): void => {
             console.error(error);
-            return ;
           });
-        })
-		.catch(() => {
-			show(
-				t('Invalid mnemonic seed')
-			);
-			return ;
-		});
+      })
+      .catch(() => {
+        show(
+          t('Invalid mnemonic seed')
+        );
+      });
 
-		const addrFromFace = addr;
-		const acc = {
-			address: addrFromFace,
-			mnemonic: mnemonic,
-		};
-		setAccount(acc);
-		setAccounts([acc]);
-		setAccount(acc);
-		accounts;
-		// setCurrent("dashboard");
+    const addrFromFace = addr;
+    const acc = {
+      address: addrFromFace,
+      mnemonic
+    };
 
-		// subBalance(addrFromFace);
-		setAvailable(0);
-		setStaking(0);
-		setNominate(0);
-		setBalance(0);
-		//end
-		pageIndex = 1;
-		loadHistoryList(acc.address);
-		store.set<string>("addr", addrFromFace);
-	};
+    setAccount(acc);
+    setAccounts([acc]);
+    setAccount(acc);
+    accounts;
+    // setCurrent("dashboard");
 
-	// const subBalance = async (address: string) => {
-		// if (unsubBalance) {
-		// 	unsubBalance();
-		// }
-		// unsubBalance = await window.api?.query["system"]["account"](address, ({ nonce, data }: { nonce: number, data: AccountInfo['data'] }) => {
-		// 	console.log('Nonce:' + nonce);
-		// 	console.log('Free balance:' + data.free.toString()); // Assuming `data.free` is of Balance type
-		// 	console.log('Reserved balance:' + data.reserved.toString());
+    // subBalance(addrFromFace);
+    setAvailable(0);
+    setStaking(0);
+    setNominate(0);
+    setBalance(0);
+    // end
+    pageIndex = 1;
+    loadHistoryList(acc.address);
+    store.set<string>('addr', addrFromFace);
+  };
 
-		// 	// If you have specific handlers or state updates in React
-		// 	const availableB = formatter.fixedBigInt(data.free.toBigInt() / (1n * 10n ** 18n));
-		// 	setAvailable(availableB);
-		// 	const stakingB = formatter.fixedBigInt(data.reserved.toBigInt() / (1n * 10n ** 18n));
-		// 	setStaking(stakingB);
-		// 	const nominateB = 0; //formatter.fixedBigInt(data.feeFrozen.toBigInt() / (1n * 10n ** 18n));
-		// 	setNominate(nominateB);
-		// 	const all = availableB + stakingB + nominateB;
-		// 	console.log("Balance:" + all);
-		// 	setBalance(all);
-		// 	loadHistoryList(address);
-		// });
-		// return unsubBalance;
-	// };
+  // const subBalance = async (address: string) => {
+  // if (unsubBalance) {
+  // 	unsubBalance();
+  // }
+  // unsubBalance = await window.api?.query["system"]["account"](address, ({ nonce, data }: { nonce: number, data: AccountInfo['data'] }) => {
+  // 	console.log('Nonce:' + nonce);
+  // 	console.log('Free balance:' + data.free.toString()); // Assuming `data.free` is of Balance type
+  // 	console.log('Reserved balance:' + data.reserved.toString());
 
-	const onClick = (e: string) => {
-		setCurrent(e);
-		setBoxTitle(e);
-	};
+  // 	// If you have specific handlers or state updates in React
+  // 	const availableB = formatter.fixedBigInt(data.free.toBigInt() / (1n * 10n ** 18n));
+  // 	setAvailable(availableB);
+  // 	const stakingB = formatter.fixedBigInt(data.reserved.toBigInt() / (1n * 10n ** 18n));
+  // 	setStaking(stakingB);
+  // 	const nominateB = 0; //formatter.fixedBigInt(data.feeFrozen.toBigInt() / (1n * 10n ** 18n));
+  // 	setNominate(nominateB);
+  // 	const all = availableB + stakingB + nominateB;
+  // 	console.log("Balance:" + all);
+  // 	setBalance(all);
+  // 	loadHistoryList(address);
+  // });
+  // return unsubBalance;
+  // };
 
-	const onCopy = (txt: string):void => {
-		copy(txt);
-		show("Copied");
-	};
+  const onClick = (e: string) => {
+    setCurrent(e);
+    setBoxTitle(e);
+  };
 
-	const onLogout = () => {
-		// if (unsubBalance) {
-		// 	unsubBalance();
-		// }
-		show("Logout success.");
-		setAccount({address: "", mnemonic: ""});
-		setCurrent("login");
-		store.remove("addr");
-	};
+  const onCopy = (txt: string): void => {
+    copy(txt);
+    show('Copied');
+  };
 
-	// const subState = (d: any) => {
-	// 	show(d);
-	// 	if (typeof d == "string") {
-	// 		show(d);
-	// 	}
-	// 	else {
-	// 		show(d.status.toString());
-	// 	}
-	// };
+  const onLogout = () => {
+    // if (unsubBalance) {
+    // 	unsubBalance();
+    // }
+    show('Logout success.');
+    setAccount({ address: '', mnemonic: '' });
+    setCurrent('login');
+    store.remove('addr');
+  };
 
-	const onSend = () => {
-		try {
-			const ret = formatParams(inputValue.send);
-			if (!ret) {
-				return;
-			}
-			// const { address, amount } = ret;
-			// const extrinsic = window.api?.tx["balances"]["transfer"](address, amount);
-			// if (!extrinsic) {
-			// 	console.error('Failed to create extrinsic');
-			// 	return;
-			// }
-			// submitTx(extrinsic);
-		} catch (e) {
-			let msg = (e as Error).message;
-			if (msg.includes("MultiAddress")) {
-				msg = "Please input the correct amount and receiving address.";
-			}
-			console.log(msg);
-			show(msg);
-		}
-	};
+  // const subState = (d: any) => {
+  // 	show(d);
+  // 	if (typeof d == "string") {
+  // 		show(d);
+  // 	}
+  // 	else {
+  // 		show(d.status.toString());
+  // 	}
+  // };
 
-	const onStaking = () => {
-		try {
-			const ret = formatParams(inputValue.staking);
-			if (!ret) {
-				return;
-			}
-			// const { address, amount } = ret;
-			// const extrinsic = window.api?.tx["sminer"]["increaseCollateral"](address, amount);
-			// if (!extrinsic) {
-			// 	console.error('Failed to create extrinsic');
-			// 	return;
-			// }
-			// submitTx(extrinsic);
-		} catch (e) {
-			show((e as Error).message);
-		}
-	};
+  const onSend = () => {
+    try {
+      const ret = formatParams(inputValue.send);
 
-	const onNominate = async () => {
-		try {
-			const ret = formatParams(inputValue.nominate);
-			if (!ret) {
-				return;
-			}
-			// const { address, amount } = ret;
-			// let extrinsic = window.api?.tx["staking"]["nominate"]([address]);
-			// if (!extrinsic) {
-			// 	console.error('Failed to create extrinsic');
-			// 	return;
-			// }
-			// const ret2 = await submitTx(extrinsic, true);
-			// if (ret2 && ret2.msg == "ok") {
-			// 	extrinsic = window.api?.tx["staking"]["bond"](amount, "Staked");
-			// 	if (!extrinsic) {
-			// 		console.error('Failed to create extrinsic');
-			// 		return;
-			// 	}
-			// 	submitTx(extrinsic);
-			// }
-		} catch (e) {
-			show((e as Error).message);
-		}
-	};
+      if (!ret) {
 
-	const onInput = (e: React.ChangeEvent<HTMLTextAreaElement>, k1: keyof InputValue, k2: keyof InputValue['staking']) => {
-		setInputValue(prevState => ({
-			...prevState,
-			[k1]: {
-				...prevState[k1],
-				[k2]: e.target.value
-			}
-		}));
-	};
+      }
+      // const { address, amount } = ret;
+      // const extrinsic = window.api?.tx["balances"]["transfer"](address, amount);
+      // if (!extrinsic) {
+      // 	console.error('Failed to create extrinsic');
+      // 	return;
+      // }
+      // submitTx(extrinsic);
+    } catch (e) {
+      let msg = (e as Error).message;
 
-	const loadHistoryList = async (addr: string) => {
-		const address = addr || account.address;
-		if (!address) {
-			show("address is null ,jump to load history.");
-			return;
-		}
-		const url = `/transfer/query?Acc=${address}&pageindex=${pageIndex}&pagesize=${webconfig.historyPageSize}`;
-		const ret = await request(url);
+      if (msg.includes('MultiAddress')) {
+        msg = 'Please input the correct amount and receiving address.';
+      }
 
-		if (ret.msg != "ok") {
-			return ;
-			// return show(ret.msg || "Request Error");
-		}
-		if( typeof ret.data != "object" ) return ;
-		const data = ret.data as ResponseData;
-		if (!data.content) {
-			return show("API error");
-		}
+      console.log(msg);
+      show(msg);
+    }
+  };
 
-		const list = data.content.map((t: Response) => {
-			return {
-				key: t.hash,
-				amount: formatter.formatBalance(t.amount),
-				type: t.from == address ? "Send" : "Receive",
-				from: t.from,
-				fromShort: formatter.formatAddress(t.from),
-				to: t.to,
-				toShort: formatter.formatAddress(t.to),
-				time: moment(t.timestamp).format("YYYY/MM/DD HH:mm:ss")
-			};
-		});
-		historyCount = data.count;
-		historyTotalPage = historyCount / webconfig.historyPageSize;
-		if (historyCount % webconfig.historyPageSize != 0) {
-			historyTotalPage++;
-		}
-		setHistorys(list);
-	};
+  const onStaking = () => {
+    try {
+      const ret = formatParams(inputValue.staking);
 
-	const onNextHistoryPage = (l: number) => {
-		pageIndex = pageIndex + l;
-		const addr = store.get<string>("addr");
-		if( addr )
-			loadHistoryList(addr);
-	};
+      if (!ret) {
 
-	const formatParams = (obj: FormatParam): {address: string, amount: bigint} | null => {
-		if (!obj.amount) {
-			show("Amount is required.");
-			return null;
-		}
-		if (obj.amount.length > 29) {
-			show("The amount character length exceeds the limit.");
-			return null;
-		}
-		if (isNaN(parseFloat(obj.amount))) {
-			show("The Amount allow only numbers input.");
-			return null;
-		}
-		const amount = parseFloat(obj.amount);
-		if (amount < 0) {
-			show("Amount error.");
-			return null;
-		}
-		if (amount > available) {
-			show('amount: ' + amount + ' available: ' + available);
-			show("Insufficient Balance");
-			return null;
-		}
-		const ret_amount = BigInt(amount * 1e18);
+      }
+      // const { address, amount } = ret;
+      // const extrinsic = window.api?.tx["sminer"]["increaseCollateral"](address, amount);
+      // if (!extrinsic) {
+      // 	console.error('Failed to create extrinsic');
+      // 	return;
+      // }
+      // submitTx(extrinsic);
+    } catch (e) {
+      show((e as Error).message);
+    }
+  };
 
-		if (!obj.address) {
-			show("Account address is required.");
-			return null;
-		}
-		if (obj.address.length < 40 || obj.address.length > 49) {
-			show("Please input the correct receiving address.");
-			return null;
-		}
-		return { address: obj.address, amount: ret_amount };
-	};
+  const onNominate = async () => {
+    try {
+      const ret = formatParams(inputValue.nominate);
 
-	const backToDashboard = () => {
-		setInputValue({
-			staking: { amount: "0", address: "" },
-			send: { amount: "0", address: "" },
-			nominate: { amount: "0", address: "" }
-		});
-		document.querySelectorAll<HTMLTextAreaElement>(".textarea1").forEach(t => {
-			t.value = "";
-		});
-		document.querySelectorAll<HTMLTextAreaElement>(".textarea2").forEach(t => {
-			t.value = "";
-		});
-		setCurrent("dashboard");
-		const addr = store.get<string>("addr");
-		if(addr) loadHistoryList(addr);
-	};
+      if (!ret) {
 
-	// const submitTx = async (extrinsic: SubmittableExtrinsic<'promise'>, hideSuccessTips: boolean = false) => {
-	// 	let ret;
-	// 	try {
-	// 		setLoading("signature");
-	// 		sdk = new Common(window.api, window.keyring);
-	// 		const wallet = window.keyring?.addFromMnemonic(account.mnemonic);
-	// 		if (!wallet) {
-	// 			console.error('Failed to create wallet');
-	// 			return;
-	// 		}
-	// 		const hash = await extrinsic.signAndSend(wallet);
-	// 		// ret = await sdk.signAndSend(account.address, extrinsic, subState);
-	// 		ret = { msg: "ok", data: hash };
-	// 		if (ret.msg == "ok") {
-	// 			if (!hideSuccessTips) {
-	// 				if (current == "Nominate") {
-	// 					antdHelper.alertOk("The Nomination is submitted", `txhash: ${ret.data}`);
-	// 				} else {
-	// 					antdHelper.alertOk("The transaction is submitted.", `txhash: ${ret.data}`);
-	// 				}
-	// 				backToDashboard();
-	// 			}
-	// 		} else {
-	// 			show(ret.msg + ret.data);
-	// 		}
-	// 	} catch (e) {
-	// 		let msg = (e as Error).message || e as Error;
-	// 		if (typeof msg == "object") {
-	// 			msg = JSON.stringify(msg);
-	// 		}
-	// 		if (msg.includes("balance too low")) {
-	// 			show("Insufficient Balance");
-	// 		} else {
-	// 			show(msg);
-	// 		}
-	// 	} finally {
-	// 		setLoading(null);
-	// 	}
-	// 	return ret;
-	// };
+      }
+      // const { address, amount } = ret;
+      // let extrinsic = window.api?.tx["staking"]["nominate"]([address]);
+      // if (!extrinsic) {
+      // 	console.error('Failed to create extrinsic');
+      // 	return;
+      // }
+      // const ret2 = await submitTx(extrinsic, true);
+      // if (ret2 && ret2.msg == "ok") {
+      // 	extrinsic = window.api?.tx["staking"]["bond"](amount, "Staked");
+      // 	if (!extrinsic) {
+      // 		console.error('Failed to create extrinsic');
+      // 		return;
+      // 	}
+      // 	submitTx(extrinsic);
+      // }
+    } catch (e) {
+      show((e as Error).message);
+    }
+  };
 
-	// const onSelectAccountForInput = async () => {
-	// 	let acc = await antdHelper.showSelectAccountBox(accounts);
-	// 	inputValue = {
-	// 		staking: { amount: 0, address: acc.address },
-	// 		send: { amount: 0, address: acc.address },
-	// 		nominate: { amount: 0, address: acc.address }
-	// 	};
-	// 	let t1 = document.querySelectorAll(".textarea2");
-	// 	t1.forEach(t => (t.value = acc.address));
-	// };
+  const onInput = (e: React.ChangeEvent<HTMLTextAreaElement>, k1: keyof InputValue, k2: keyof InputValue['staking']) => {
+    setInputValue((prevState) => ({
+      ...prevState,
+      [k1]: {
+        ...prevState[k1],
+        [k2]: e.target.value
+      }
+    }));
+  };
 
-	// const onReConnect = async (e: any) => {
-	// 	let timeout = setTimeout(function () {
-	// 		show("Connect timeout");
-	// 	}, 5000);
-	// 	let { api } = await init(customRPC);
-	// 	clearTimeout(timeout);
-	// 	if (api) {
-	// 		show("Connected");
-	// 	} else {
-	// 		show("Connect failed");
-	// 	}
-	// };
+  const loadHistoryList = async (addr: string) => {
+    const address = addr || account.address;
 
-	return (
-		<div className={className}>
-			{	current == "login" &&
-				<div className="headerPart">
-					<div>
-						<span className="part1">
-							<h1 className="content1">ANON ID</h1>
-						</span>
-						<Header />
-					</div>
-					<div className="part3">
-						<CameraComp setCessAddr={createWalletTestFromFace} />
-					</div>
-					<p className="part4">Anon ID does not store any faces only vector arrays</p>
+    if (!address) {
+      show('address is null ,jump to load history.');
+
+      return;
+    }
+
+    const url = `/transfer/query?Acc=${address}&pageindex=${pageIndex}&pagesize=${webconfig.historyPageSize}`;
+    const ret = await request(url);
+
+    if (ret.msg != 'ok') {
+      return;
+      // return show(ret.msg || "Request Error");
+    }
+
+    if (typeof ret.data !== 'object') {
+      return;
+    }
+
+    const data = ret.data as ResponseData;
+
+    if (!data.content) {
+      return show('API error');
+    }
+
+    const list = data.content.map((t: Response) => {
+      return {
+        key: t.hash,
+        amount: formatter.formatBalance(t.amount),
+        type: t.from == address ? 'Send' : 'Receive',
+        from: t.from,
+        fromShort: formatter.formatAddress(t.from),
+        to: t.to,
+        toShort: formatter.formatAddress(t.to),
+        time: moment(t.timestamp).format('YYYY/MM/DD HH:mm:ss')
+      };
+    });
+
+    historyCount = data.count;
+    historyTotalPage = historyCount / webconfig.historyPageSize;
+
+    if (historyCount % webconfig.historyPageSize != 0) {
+      historyTotalPage++;
+    }
+
+    setHistorys(list);
+  };
+
+  const onNextHistoryPage = (l: number) => {
+    pageIndex = pageIndex + l;
+    const addr = store.get<string>('addr');
+
+    if (addr) {
+      loadHistoryList(addr);
+    }
+  };
+
+  const formatParams = (obj: FormatParam): {address: string, amount: bigint} | null => {
+    if (!obj.amount) {
+      show('Amount is required.');
+
+      return null;
+    }
+
+    if (obj.amount.length > 29) {
+      show('The amount character length exceeds the limit.');
+
+      return null;
+    }
+
+    if (isNaN(parseFloat(obj.amount))) {
+      show('The Amount allow only numbers input.');
+
+      return null;
+    }
+
+    const amount = parseFloat(obj.amount);
+
+    if (amount < 0) {
+      show('Amount error.');
+
+      return null;
+    }
+
+    if (amount > available) {
+      show('amount: ' + amount + ' available: ' + available);
+      show('Insufficient Balance');
+
+      return null;
+    }
+
+    const ret_amount = BigInt(amount * 1e18);
+
+    if (!obj.address) {
+      show('Account address is required.');
+
+      return null;
+    }
+
+    if (obj.address.length < 40 || obj.address.length > 49) {
+      show('Please input the correct receiving address.');
+
+      return null;
+    }
+
+    return { address: obj.address, amount: ret_amount };
+  };
+
+  const backToDashboard = () => {
+    setInputValue({
+      staking: { amount: '0', address: '' },
+      send: { amount: '0', address: '' },
+      nominate: { amount: '0', address: '' }
+    });
+    document.querySelectorAll<HTMLTextAreaElement>('.textarea1').forEach((t) => {
+      t.value = '';
+    });
+    document.querySelectorAll<HTMLTextAreaElement>('.textarea2').forEach((t) => {
+      t.value = '';
+    });
+    setCurrent('dashboard');
+    const addr = store.get<string>('addr');
+
+    if (addr) {
+      loadHistoryList(addr);
+    }
+  };
+
+  // const submitTx = async (extrinsic: SubmittableExtrinsic<'promise'>, hideSuccessTips: boolean = false) => {
+  // 	let ret;
+  // 	try {
+  // 		setLoading("signature");
+  // 		sdk = new Common(window.api, window.keyring);
+  // 		const wallet = window.keyring?.addFromMnemonic(account.mnemonic);
+  // 		if (!wallet) {
+  // 			console.error('Failed to create wallet');
+  // 			return;
+  // 		}
+  // 		const hash = await extrinsic.signAndSend(wallet);
+  // 		// ret = await sdk.signAndSend(account.address, extrinsic, subState);
+  // 		ret = { msg: "ok", data: hash };
+  // 		if (ret.msg == "ok") {
+  // 			if (!hideSuccessTips) {
+  // 				if (current == "Nominate") {
+  // 					antdHelper.alertOk("The Nomination is submitted", `txhash: ${ret.data}`);
+  // 				} else {
+  // 					antdHelper.alertOk("The transaction is submitted.", `txhash: ${ret.data}`);
+  // 				}
+  // 				backToDashboard();
+  // 			}
+  // 		} else {
+  // 			show(ret.msg + ret.data);
+  // 		}
+  // 	} catch (e) {
+  // 		let msg = (e as Error).message || e as Error;
+  // 		if (typeof msg == "object") {
+  // 			msg = JSON.stringify(msg);
+  // 		}
+  // 		if (msg.includes("balance too low")) {
+  // 			show("Insufficient Balance");
+  // 		} else {
+  // 			show(msg);
+  // 		}
+  // 	} finally {
+  // 		setLoading(null);
+  // 	}
+  // 	return ret;
+  // };
+
+  // const onSelectAccountForInput = async () => {
+  // 	let acc = await antdHelper.showSelectAccountBox(accounts);
+  // 	inputValue = {
+  // 		staking: { amount: 0, address: acc.address },
+  // 		send: { amount: 0, address: acc.address },
+  // 		nominate: { amount: 0, address: acc.address }
+  // 	};
+  // 	let t1 = document.querySelectorAll(".textarea2");
+  // 	t1.forEach(t => (t.value = acc.address));
+  // };
+
+  // const onReConnect = async (e: any) => {
+  // 	let timeout = setTimeout(function () {
+  // 		show("Connect timeout");
+  // 	}, 5000);
+  // 	let { api } = await init(customRPC);
+  // 	clearTimeout(timeout);
+  // 	if (api) {
+  // 		show("Connected");
+  // 	} else {
+  // 		show("Connect failed");
+  // 	}
+  // };
+
+  return (
+    <div className={className}>
+      {	current == 'login' &&
+				<div className='headerPart'>
+				  <div>
+				    <span className='part1'>
+				      <h1 className='content1'>ANON ID</h1>
+				    </span>
+				    <Header />
+				  </div>
+				  <div className='part3'>
+				    <CameraComp setCessAddr={createWalletTestFromFace} />
+				  </div>
+				  <p className='part4'>Anon ID does not store any faces only vector arrays</p>
 				</div>
-			}
-			<div className={current == "dashboard" ? "dashboard" : "none"}>
-				<div className="b1">
-					<div className="btn" onClick={onLogout}></div>
-					<div className="line l1">{formatter.toLocaleString(balance)} CESS</div>
-					<div className="line l2">Balance</div>
-					<div className="line l3">
-						<span className="txt">{formatter.formatAddressLong(account.address)} </span>
-						<label className="icon" onClick={() => onCopy(account.address)}></label>
-					</div>
-					{/* <div className={accountType == "face" ? "line l4" : "none"}>
+      }
+      <div className={current == 'dashboard' ? 'dashboard' : 'none'}>
+        <div className='b1'>
+          <div
+            className='btn'
+            onClick={onLogout}
+          ></div>
+          <div className='line l1'>{formatter.toLocaleString(balance)} CESS</div>
+          <div className='line l2'>Balance</div>
+          <div className='line l3'>
+            <span className='txt'>{formatter.formatAddressLong(account.address)} </span>
+            <label
+              className='icon'
+              onClick={() => onCopy(account.address)}
+            ></label>
+          </div>
+          {/* <div className={accountType == "face" ? "line l4" : "none"}>
 						<label className="icon"></label>
 						<span className="txt">Show the CESS address</span>
 					</div> */}
-				</div>
-				<div className="b2">
-					<div className="btn-box btn1" onClick={() => onClick("Send")}>
+        </div>
+        <div className='b2'>
+          <div
+            className='btn-box btn1'
+            onClick={() => onClick('Send')}
+          >
 						Send
-					</div>
-					<div className="btn-box btn2" onClick={() => onClick("Receive")}>
+          </div>
+          <div
+            className='btn-box btn2'
+            onClick={() => onClick('Receive')}
+          >
 						Receive
-					</div>
-					<div className="btn-box btn3" onClick={() => onClick("Staking")}>
+          </div>
+          <div
+            className='btn-box btn3'
+            onClick={() => onClick('Staking')}
+          >
 						Staking
-					</div>
-					<div className="btn-box btn4" onClick={() => onClick("Nominate")}>
+          </div>
+          <div
+            className='btn-box btn4'
+            onClick={() => onClick('Nominate')}
+          >
 						Nominate
-					</div>
-				</div>
-				<div className="b3">
-					<div className="b3-t">Asset Analysis</div>
-					<div className="tb">
-						<div className="tr">
-							<span>Available</span>
-							<label>{formatter.toLocaleString(available)} CESS</label>
-						</div>
-						<div className="tr">
-							<span>Staking</span>
-							<label>{formatter.toLocaleString(staking)} CESS</label>
-						</div>
-						<div className="tr">
-							<span>Nominate</span>
-							<label>{formatter.toLocaleString(nominate)} CESS</label>
-						</div>
-					</div>
-				</div>
-				<div className="b4">
-					<div className="t1">History</div>
-					<div className="tb">
-						{historys &&
+          </div>
+        </div>
+        <div className='b3'>
+          <div className='b3-t'>Asset Analysis</div>
+          <div className='tb'>
+            <div className='tr'>
+              <span>Available</span>
+              <label>{formatter.toLocaleString(available)} CESS</label>
+            </div>
+            <div className='tr'>
+              <span>Staking</span>
+              <label>{formatter.toLocaleString(staking)} CESS</label>
+            </div>
+            <div className='tr'>
+              <span>Nominate</span>
+              <label>{formatter.toLocaleString(nominate)} CESS</label>
+            </div>
+          </div>
+        </div>
+        <div className='b4'>
+          <div className='t1'>History</div>
+          <div className='tb'>
+            {historys &&
 							historys.map((t: TransactionHistory) => {
-								return (
-									<div className="tr" key={t.key}>
-										<div className="left">
-											<span className="amount">
-												<Tooltip title={t.type == "Send" ? "-" + t.amount : "+" + t.amount}>
-													<span className="o-text">
-														{t.type == "Send" ? "-" : "+"}
-														{t.amount}
-													</span>
-												</Tooltip>
-											</span>
-											<label className="type">{t.type}</label>
-										</div>
-										<div className="right">
-											<span title="copy" onClick={() => onCopy(t.from)}>
+							  return (
+							    <div
+							      className='tr'
+							      key={t.key}
+							    >
+							      <div className='left'>
+							        <span className='amount'>
+							          <Tooltip title={t.type == 'Send' ? '-' + t.amount : '+' + t.amount}>
+							            <span className='o-text'>
+							              {t.type == 'Send' ? '-' : '+'}
+							              {t.amount}
+							            </span>
+							          </Tooltip>
+							        </span>
+							        <label className='type'>{t.type}</label>
+							      </div>
+							      <div className='right'>
+							        <span
+							          onClick={() => onCopy(t.from)}
+							          title='copy'
+							        >
 												From {t.fromShort}
-											</span>
-											<label title="copy" onClick={() => onCopy(t.to)}>
+							        </span>
+							        <label
+							          onClick={() => onCopy(t.to)}
+							          title='copy'
+							        >
 												To {t.toShort}
-											</label>
-											{/* <font>{t.time}</font> */}
-										</div>
-									</div>
-								);
+							        </label>
+							        {/* <font>{t.time}</font> */}
+							      </div>
+							    </div>
+							  );
 							})}
-						{!historys || historys.length == 0 ? <div className="no-data">No data</div> : ""}
-					</div>
-					<div className={historys && historys.length && historyTotalPage > 1 ? "pager" : "none"}>
-						<div className={pageIndex == 1 ? "none" : "pre"} onClick={() => onNextHistoryPage(-1)}></div>
-						<div className={pageIndex >= historyTotalPage ? "none" : "next"} onClick={() => onNextHistoryPage(1)}></div>
-					</div>
-				</div>
-			</div>
-			<div className={"Send,Receive,Staking,Nominate".includes(current) ? "box-out" : "none"}>
-				<div className="box">
-					<div className="top-header">
-						<div className="back" onClick={backToDashboard}></div>
-						{boxTitle}
-					</div>
-					<div className={current == "Send" ? "send" : "none"}>
-						<div className="myinput">
-							<div className="tips">
-								<span>Receiving Address</span>
-								{/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
+            {!historys || historys.length == 0 ? <div className='no-data'>No data</div> : ''}
+          </div>
+          <div className={historys && historys.length && historyTotalPage > 1 ? 'pager' : 'none'}>
+            <div
+              className={pageIndex == 1 ? 'none' : 'pre'}
+              onClick={() => onNextHistoryPage(-1)}
+            ></div>
+            <div
+              className={pageIndex >= historyTotalPage ? 'none' : 'next'}
+              onClick={() => onNextHistoryPage(1)}
+            ></div>
+          </div>
+        </div>
+      </div>
+      <div className={'Send,Receive,Staking,Nominate'.includes(current) ? 'box-out' : 'none'}>
+        <div className='box'>
+          <div className='top-header'>
+            <div
+              className='back'
+              onClick={backToDashboard}
+            ></div>
+            {boxTitle}
+          </div>
+          <div className={current == 'Send' ? 'send' : 'none'}>
+            <div className='myinput'>
+              <div className='tips'>
+                <span>Receiving Address</span>
+                {/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
 									+
 								</label> */}
-							</div>
-							<textarea
-								maxLength={49}
-								onChange={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "send", "address")}
-								onInput={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "send", "address")}
-								placeholder="cX"
-								className="textarea2"></textarea>
-						</div>
-						<div className="myinput">
-							<div className="tips">Amount(CESS)</div>
-							<textarea
-								maxLength={29}
-								onChange={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "send", "amount")}
-								onInput={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "send", "amount")}
-								placeholder="0"
-								className="textarea1"></textarea>
-						</div>
-						<div className="t1">Balance: {formatter.toLocaleString(available)} CESS</div>
-						{loading == "signature" ? (
-							<div className="btn btn-disabled">
-								<Spin size="small" />
+              </div>
+              <textarea
+                className='textarea2'
+                maxLength={49}
+                onChange={(e) => onInput(e, 'send', 'address')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'send', 'address')}
+                placeholder='cX'
+              ></textarea>
+            </div>
+            <div className='myinput'>
+              <div className='tips'>Amount(CESS)</div>
+              <textarea
+                className='textarea1'
+                maxLength={29}
+                onChange={(e) => onInput(e, 'send', 'amount')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'send', 'amount')}
+                placeholder='0'
+              ></textarea>
+            </div>
+            <div className='t1'>Balance: {formatter.toLocaleString(available)} CESS</div>
+            {loading == 'signature'
+              ? (
+                <div className='btn btn-disabled'>
+                  <Spin size='small' />
 								&nbsp;&nbsp;Loading...
-							</div>
-						) : (
-							<div className="btn" onClick={onSend}>
+                </div>
+              )
+              : (
+                <div
+                  className='btn'
+                  onClick={onSend}
+                >
 								Signature
-							</div>
-						)}
-					</div>
-					<div className={current == "Receive" ? "receive" : "none"}>
-						<div className="qr">{account?.address && <QrSvg value={account?.address} />}</div>
-						<div className="show-address">
-							<div className="tips">Receiving Address</div>
-							<div className="address">{account?.address}</div>
-							<div className="btn-copy" onClick={() => onCopy(account?.address)}></div>
-						</div>
-					</div>
-					<div className={current == "Staking" ? "staking" : "none"}>
-						<div className="myinput">
-							<div className="tips">
-								<span>Storage Miner Account</span>
-								{/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
+                </div>
+              )}
+          </div>
+          <div className={current == 'Receive' ? 'receive' : 'none'}>
+            <div className='qr'>{account?.address && <QrSvg value={account?.address} />}</div>
+            <div className='show-address'>
+              <div className='tips'>Receiving Address</div>
+              <div className='address'>{account?.address}</div>
+              <div
+                className='btn-copy'
+                onClick={() => onCopy(account?.address)}
+              ></div>
+            </div>
+          </div>
+          <div className={current == 'Staking' ? 'staking' : 'none'}>
+            <div className='myinput'>
+              <div className='tips'>
+                <span>Storage Miner Account</span>
+                {/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
 									+
 								</label> */}
-							</div>
-							<textarea
-								maxLength={49}
-								onChange={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "staking", "address")}
-								onInput={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "staking", "address")}
-								placeholder="cX"
-								className="textarea2"></textarea>
-						</div>
-						<div className="myinput">
-							<div className="tips">Staking Amount(CESS)</div>
-							<textarea
-								maxLength={29}
-								onChange={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "staking", "amount")}
-								onInput={e => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "staking", "amount")}
-								placeholder="0"
-								className="textarea1"></textarea>
-						</div>
-						<div className="t1">Balance: {formatter.toLocaleString(available)} CESS</div>
-						{loading == "signature" ? (
-							<div className="btn btn-disabled">
-								<Spin size="small" />
+              </div>
+              <textarea
+                className='textarea2'
+                maxLength={49}
+                onChange={(e) => onInput(e, 'staking', 'address')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'staking', 'address')}
+                placeholder='cX'
+              ></textarea>
+            </div>
+            <div className='myinput'>
+              <div className='tips'>Staking Amount(CESS)</div>
+              <textarea
+                className='textarea1'
+                maxLength={29}
+                onChange={(e) => onInput(e, 'staking', 'amount')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'staking', 'amount')}
+                placeholder='0'
+              ></textarea>
+            </div>
+            <div className='t1'>Balance: {formatter.toLocaleString(available)} CESS</div>
+            {loading == 'signature'
+              ? (
+                <div className='btn btn-disabled'>
+                  <Spin size='small' />
 								&nbsp;&nbsp;Loading...
-							</div>
-						) : (
-							<div className="btn" onClick={onStaking}>
+                </div>
+              )
+              : (
+                <div
+                  className='btn'
+                  onClick={onStaking}
+                >
 								Signature
-							</div>
-						)}
-					</div>
-					<div className={current == "Nominate" ? "nominate" : "none"}>
-						<div className="myinput">
-							<div className="tips">
-								<span>Consensus Account</span>
-								{/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
+                </div>
+              )}
+          </div>
+          <div className={current == 'Nominate' ? 'nominate' : 'none'}>
+            <div className='myinput'>
+              <div className='tips'>
+                <span>Consensus Account</span>
+                {/* <label className={accountType == "polkdot" && accounts && accounts.length > 1 ? "none" : "none"} onClick={onSelectAccountForInput}>
 									+
 								</label> */}
-							</div>
-							<textarea
-								maxLength={49}
-								onChange={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "nominate", "address")}
-								onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "nominate", "address")}
-								placeholder="cX"
-								className="textarea2"></textarea>
-						</div>
-						<div className="myinput">
-							<div className="tips">Staking Amount(CESS)</div>
-							<textarea
-								maxLength={29}
-								onChange={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "nominate", "address")}
-								onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, "nominate", "address")}
-								placeholder="0"
-								className="textarea1"></textarea>
-						</div>
-						<div className="t1">Balance: {formatter.toLocaleString(available)} CESS</div>
-						{loading == "signature" ? (
-							<div className="btn btn-disabled">
-								<Spin size="small" />
+              </div>
+              <textarea
+                className='textarea2'
+                maxLength={49}
+                onChange={(e) => onInput(e, 'nominate', 'address')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'nominate', 'address')}
+                placeholder='cX'
+              ></textarea>
+            </div>
+            <div className='myinput'>
+              <div className='tips'>Staking Amount(CESS)</div>
+              <textarea
+                className='textarea1'
+                maxLength={29}
+                onChange={(e) => onInput(e, 'nominate', 'address')}
+                onInput={(e) => onInput(e as React.ChangeEvent<HTMLTextAreaElement>, 'nominate', 'address')}
+                placeholder='0'
+              ></textarea>
+            </div>
+            <div className='t1'>Balance: {formatter.toLocaleString(available)} CESS</div>
+            {loading == 'signature'
+              ? (
+                <div className='btn btn-disabled'>
+                  <Spin size='small' />
 								&nbsp;&nbsp;Loading...
-							</div>
-						) : (
-							<div className="btn" onClick={onNominate}>
+                </div>
+              )
+              : (
+                <div
+                  className='btn'
+                  onClick={onNominate}
+                >
 								Signature
-							</div>
-						)}
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+                </div>
+              )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default styled(Home)<Props>`
@@ -1473,4 +1582,4 @@ export default styled(Home)<Props>`
     width: 20px !important;
     height: 20px !important;
   }
-`
+`;
