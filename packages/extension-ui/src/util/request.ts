@@ -1,5 +1,10 @@
-import axios from 'axios';
+// Copyright 2019-2024 @polkadot/extension-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
+
+import axios from 'axios';
+
 import webconfig from '../webconfig';
 
 interface AjaxResponse {
@@ -17,16 +22,17 @@ interface ErrorResponse {
   message?: string;
 }
 
-async function ajax(url: string, data?: unknown, headers: Record<string, string> = {}): Promise<AjaxResponse> {
+async function ajax (url: string, data?: unknown, headers: Record<string, string> = {}): Promise<AjaxResponse> {
   try {
-    if (!url.includes("http")) {
+    if (!url.includes('http')) {
       url = webconfig.apiUrl + url;
     }
+
     const op: AxiosRequestConfig = {
       method: data ? 'post' : 'get',
       url,
       headers,
-      data: data || undefined,
+      data: data || undefined
     };
 
     const res: AxiosResponse = await axios(op);
@@ -41,7 +47,7 @@ async function ajax(url: string, data?: unknown, headers: Record<string, string>
     }
 
     if (typeof ret === 'object' && ret.code === 200) {
-      ret.msg = "ok";
+      ret.msg = 'ok';
     }
 
     return ret as AjaxResponse;
@@ -56,7 +62,8 @@ async function ajax(url: string, data?: unknown, headers: Record<string, string>
     } else if (err.data?.msg) {
       return { msg: err.data.msg };
     }
-    return { msg: err.message || "Unknown error" };
+
+    return { msg: err.message || 'Unknown error' };
   }
 }
 

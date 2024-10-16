@@ -1,3 +1,6 @@
+// Copyright 2019-2024 @polkadot/extension-ui authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { notification } from 'antd';
 
 type NotificationType = 'success' | 'info' | 'warning' | 'error';
@@ -9,7 +12,7 @@ export const Notification = (
 ): void => {
   notification[type]({
     message: title,
-    description: description,
-    duration: 2,
+    description,
+    duration: 2
   });
 };
