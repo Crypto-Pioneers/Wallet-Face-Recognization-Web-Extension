@@ -20,6 +20,7 @@ import copySvg from '../../assets/img/copy.svg';
 import copyBlackPng from '../../assets/img/copy-black.svg';
 import dashboardSvg from '../../assets/img/dashboard-bg.svg';
 import exitSvg from '../../assets/img/exit.png';
+import logo from '../../assets/img/logo.png';
 import nominatePng from '../../assets/img/nominate.png';
 import receivePng from '../../assets/img/receive.png';
 import sendPng from '../../assets/img/send.png';
@@ -112,7 +113,7 @@ function Home ({ className }: Props): React.ReactElement<Props> {
   const { show } = useToast();
   const onAction = useContext(ActionContext);
   const [loading, setLoading] = useState<string | null>(null);
-  const [current, setCurrent] = useState<string>('login');
+  const [current, setCurrent] = useState<string>('policy');
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [account, setAccount] = useState<Account>({ address: '', mnemonic: '' });
   const [balance, setBalance] = useState<number>(0);
@@ -434,7 +435,7 @@ function Home ({ className }: Props): React.ReactElement<Props> {
     const url = `/transfer/query?Acc=${address}&pageindex=${pageIndex}&pagesize=${webconfig.historyPageSize}`;
     const ret = await request(url);
 
-    if (ret.msg != 'ok') {
+    if (ret.msg !== 'ok') {
       return;
       // return show(ret.msg || "Request Error");
     }
@@ -619,21 +620,43 @@ function Home ({ className }: Props): React.ReactElement<Props> {
 
   return (
     <div className={className}>
-      {	current == 'login' &&
-				<div className='headerPart'>
-				  <div>
-				    <span className='part1'>
-				      <h1 className='content1'>ANON ID</h1>
-				    </span>
-				    <Header />
-				  </div>
-				  <div className='part3'>
-				    <CameraComp setCessAddr={createWalletTestFromFace} />
-				  </div>
-				  <p className='part4'>Anon ID does not store any faces only vector arrays</p>
-				</div>
+      {
+        current === 'policy' &&
+          <div className='headerPart'>
+            <div>
+              <span className='part1'>
+                <p className='content1'>Welcome</p>
+                <img
+                  alt='Navigation Logo'
+                  src={logo}
+                />
+              </span>
+
+            </div>
+            <div className='part3'>
+              <p>We do not send any clicks, pageviews or events to a central server</p>
+              <p>We do not use any trackers or analytics</p>
+              <p>We dont collect keys, addresses or any information - your information never leaves this machine</p>
+            </div>
+            <p className='part4'>...we are not in the information collection business even anonymized</p>
+          </div>
       }
-      <div className={current == 'dashboard' ? 'dashboard' : 'none'}>
+      {
+        current === 'login' &&
+          <div className='headerPart'>
+            <div>
+              <span className='part1'>
+                <h1 className='content1'>ANON ID</h1>
+              </span>
+              <Header />
+            </div>
+            <div className='part3'>
+              <CameraComp setCessAddr={createWalletTestFromFace} />
+            </div>
+            <p className='part4'>Anon ID does not store any faces only vector arrays</p>
+          </div>
+      }
+      <div className={current === 'dashboard' ? 'dashboard' : 'none'}>
         <div className='b1'>
           <div
             className='btn'
