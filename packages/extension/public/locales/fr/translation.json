@@ -155,5 +155,9 @@
   "Import Account": "Importer",
   "Sign on Ledger": "Signer sur Ledger",
   "Allow use on any chain": "Toutes les blockchains",
-  "Select network": "Sélectionner un réseau"
+  "Select network": "Sélectionner un réseau",
+  "By clicking below you agree to our": "En cliquant ci-dessous, vous acceptez nos",
+  "privacy policy": "politique de confidentialité",
+  "and": "et",
+  "biometric consent forms": "formulaires de consentement biométrique"
 }
