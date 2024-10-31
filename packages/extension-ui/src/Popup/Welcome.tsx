@@ -34,6 +34,15 @@ function Welcome ({ className }: Props): React.ReactElement<Props> {
             <li>{t('We do not send any clicks, pageviews or events to a central server')}</li>
             <li>{t('We do not use any trackers or analytics')}</li>
             <li>{t("We don't collect keys, addresses or any information - your information never leaves this machine")}</li>
+            <li>{t('By clicking below you agree to our')} <a
+              href='https://www.anonid.io/privacy-policy'
+              rel='noopener noreferrer'
+              target='_blank'
+            >{t('privacy policy')}</a> {t('and')} <a
+              href='https://www.anonid.io/biometricconsent'
+              rel='noopener noreferrer'
+              target='_blank'
+                                                                                                >{t(`${t('biometric consent forms')}`)}</a></li>
           </List>
         </Box>
         <p>{t('... we are not in the information collection business (even anonymized).')}</p>

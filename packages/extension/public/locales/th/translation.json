@@ -160,5 +160,9 @@
   "Export all accounts": "ส่งออกทุกบัญชี",
   "All account": "ทุกบัญชี",
   "password for encrypting all accounts": "รหัสผ่านสำหรับการเข้ารหัสทุกบัญชี",
-  "I want to export all my accounts": "ฉันอยากจะนำออกทุกบัญชี"
+  "I want to export all my accounts": "ฉันอยากจะนำออกทุกบัญชี",
+  "By clicking below you agree to our": "กดด้านล่างนี้เพื่อยอมรับข้อตกลงของเรา",
+  "privacy policy": "นโยบายความปลอดภัย",
+  "and": "และ",
+  "biometric consent forms": "รูปแบบการยอมรับความปลอดภัย"
 }
