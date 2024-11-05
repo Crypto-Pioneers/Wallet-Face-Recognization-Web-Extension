@@ -35,11 +35,13 @@ function Welcome ({ className }: Props): React.ReactElement<Props> {
             <li>{t('We do not use any trackers or analytics')}</li>
             <li>{t("We don't collect keys, addresses or any information - your information never leaves this machine")}</li>
             <li>{t('By clicking below you agree to our')} <a
+              className='privacy-link'
               href='https://www.anonid.io/privacy-policy'
               rel='noopener noreferrer'
               target='_blank'
             >{t('privacy policy')}</a> {t('and')} <a
-              href='https://www.anonid.io/biometricconsent'
+              className='privacy-link'
+              href='https://www.anonid.io/biometric-consent'
               rel='noopener noreferrer'
               target='_blank'
                                                                                                 >{t(`${t('biometric consent forms')}`)}</a></li>
@@ -60,5 +62,9 @@ export default styled(Welcome)<Props>`
     color: var(--subTextColor);
     margin-bottom: 6px;
     margin-top: 0;
+  }
+
+  .privacy-link {
+    color: white;
   }
 `;
